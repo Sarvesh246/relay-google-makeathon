@@ -783,7 +783,7 @@ class Component extends DCLogic {
     // import for handoff
     const impCats=[['rules','TAMU rules'],['lessons','What worked / didn’t'],['event','Event recap'],['contacts','Contacts'],['guide','General guide']].map(([id,l])=>({l,go:()=>this.setState({impC:id}),style:'height:30px;padding:0 11px;border-radius:10px;cursor:pointer;font-size:12.5px;font-weight:600;transition:all .15s;border:1px solid '+(s.impC===id?'var(--tx)':'var(--line)')+';background:'+(s.impC===id?'var(--tx)':'var(--card)')+';color:'+(s.impC===id?'var(--bg)':'var(--mu)')}));
     const impOk=!!(s.impT.trim()&&s.impX.trim());
-    const saveImp=()=>{ if(!impOk) return; this.addDoc({title:s.impT.trim(),category:s.impC,event:s.impE.trim(),year:s.impY.trim(),author:'Jordan Ellis',text:s.impX.trim()}); this.setState({impOpen:false,impT:'',impE:'',impX:''}); this.toast('Added to the Playbook’s memory'); };
+    const saveImp=()=>{ if(!impOk) return; this.addDoc({title:s.impT.trim(),category:s.impC,event:s.impE.trim(),year:s.impY.trim(),author:'Jordan Ellis',text:s.impX.trim()}); this.setState({impOpen:false,impT:'',impE:'',impX:'',q:''}); this.toast('Added to the Playbook’s memory'); };
     const impFile=e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; if(f.size>200000){ this.toast('That file is too large. Paste the key parts instead.'); return; } const r=new FileReader(); r.onload=()=>this.setState(x=>({impX:String(r.result||'').slice(0,6000),impT:x.impT||f.name.replace(/\.[^.]+$/,'')})); r.readAsText(f); };
     const impField='width:100%;height:38px;padding:0 12px;border:1px solid var(--line);outline:0;border-radius:10px;background:var(--sub);color:var(--tx);font-size:14px';
     // playbook
