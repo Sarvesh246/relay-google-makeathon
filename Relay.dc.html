@@ -595,6 +595,11 @@
 <sc-if value="{{ isEvt }}" hint-placeholder-val="{{ false }}">
 <div class="relay-screen relay-events" data-screen-label="Events" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
 <section class="relay-month-calendar">
+<section class="relay-calendar-form" aria-label="Google Calendar">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><h3 style="margin:0 0 5px">Google Calendar</h3><small style="color:var(--event-muted)">Embed a shared calendar using its calendar ID or Google embed link.</small></div><button type="button" class="relay-cal-action" onClick="{{ googleCalendarToggle }}">{{ googleCalendarToggleLabel }}</button></div>
+<sc-if value="{{ googleCalendarSettings }}" hint-placeholder-val="{{ false }}"><form onSubmit="{{ googleCalendarSave }}" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px"><input aria-label="Google Calendar ID or embed link" value="{{ googleCalendarInput }}" onChange="{{ googleCalendarInputChange }}" placeholder="Calendar ID or Google Calendar embed link" style="flex:1 1 280px;min-width:0;padding:10px 12px;border-radius:10px;border:1px solid var(--event-edge);background:var(--card);color:var(--tx)"><button class="relay-cal-action primary" type="submit">Show calendar</button><sc-if value="{{ googleCalendarHasUrl }}" hint-placeholder-val="{{ false }}"><button class="relay-cal-action" type="button" onClick="{{ googleCalendarRemove }}">Remove</button></sc-if></form><div style="margin-top:10px;font-size:12px;color:var(--event-muted)">In Google Calendar settings, choose a calendar → Integrate calendar → copy its Calendar ID or embed URL. Only people with access can see it. This setting is saved in this browser.</div><sc-if value="{{ googleCalendarHasError }}" hint-placeholder-val="{{ false }}"><div role="alert" style="margin-top:8px;color:var(--warn)">{{ googleCalendarError }}</div></sc-if></sc-if>
+<sc-if value="{{ googleCalendarHasUrl }}" hint-placeholder-val="{{ false }}"><iframe title="Google Calendar" src="{{ googleCalendarUrl }}" loading="lazy" style="display:block;width:100%;height:600px;margin-top:16px;border:0;border-radius:12px;background:white"></iframe><div style="margin-top:8px;color:var(--event-muted);font-size:12px">Google Calendar is separate from Relay events below. Changes made here are not synced to Relay.</div></sc-if>
+</section>
 <div class="relay-calendar-toolbar">
 <h2>Calendar</h2>
 <div class="relay-calendar-nav">
@@ -923,7 +928,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Vermilion&quot;,&quot;Cobalt&quot;,&quot;Maroon&quot;],&quot;default&quot;:&quot;Vermilion&quot;,&quot;tsType&quot;:&quot;'Vermilion'|'Cobalt'|'Maroon'&quot;,&quot;section&quot;:&quot;Brand&quot;},&quot;sidebar&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Ink&quot;,&quot;Paper&quot;],&quot;default&quot;:&quot;Ink&quot;,&quot;tsType&quot;:&quot;'Ink'|'Paper'&quot;,&quot;section&quot;:&quot;Brand&quot;},&quot;startTab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;evt&quot;,&quot;fin&quot;,&quot;mem&quot;,&quot;mkt&quot;,&quot;hand&quot;,&quot;arc&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Prototype&quot;}}">
 class Component extends DCLogic {
-  state = { calendarMonth:null,calendarDay:null,calendarUserEvents:[],calendarShowPlan:false,calendarFormOpen:false,calendarDraftTitle:'',calendarDraftDate:'',calendarDraftTime:'',calendarDraftLocation:'',calendarError:'',drive:{folder:'',name:'',email:'',at:0,n:0,skipped:0}, driveOpen:false, driveInput:'', driveBusy:false, driveMsg:'', cfg:{googleClientId:'',driveFolderId:'',allowedDomain:''}, useArt:true, photo:null, flags:[], pv:null, docs:[], impOpen:false, impT:'', impC:'lessons', impE:'', impY:'2026', impX:'', fu:[], tab:null, dark:false, side:true, ai:false, draft:'', typing:false, toast:null, evt:0, est:false, memF:'all', step:2, q:'', role:'Treasurer', reminded:false, nudged:false, writing:false, tone:'Hype',
+  state = { googleCalendarUrl:'',googleCalendarInput:'',googleCalendarSettings:true,googleCalendarError:'', calendarMonth:null,calendarDay:null,calendarUserEvents:[],calendarShowPlan:false,calendarFormOpen:false,calendarDraftTitle:'',calendarDraftDate:'',calendarDraftTime:'',calendarDraftLocation:'',calendarError:'',drive:{folder:'',name:'',email:'',at:0,n:0,skipped:0}, driveOpen:false, driveInput:'', driveBusy:false, driveMsg:'', cfg:{googleClientId:'',driveFolderId:'',allowedDomain:''}, useArt:true, photo:null, flags:[], pv:null, docs:[], impOpen:false, impT:'', impC:'lessons', impE:'', impY:'2026', impX:'', fu:[], tab:null, dark:false, side:true, ai:false, draft:'', typing:false, toast:null, evt:0, est:false, memF:'all', step:2, q:'', role:'Treasurer', reminded:false, nudged:false, writing:false, tone:'Hype',
     check:{room:false,cater:false,judges:true,brackets:true,budget:true}, tasks:{},
     mkt:'Robo-Rumble scrimmage, Sat Nov 15, 6pm at the Rec Center. Free pizza. Bring your bot.',
     msgs:[{r:'a',text:'Ask how something was done before. Every answer links to the doc it came from.',src:[]}],
@@ -944,6 +949,7 @@ class Component extends DCLogic {
   };
   componentDidMount(){
     this.loadCalendarEvents();
+    try { const url=localStorage.getItem('relay.googleCalendar'); if(url){const safe=this.googleCalendarEmbed(url); if(safe) this.setState({googleCalendarUrl:safe,googleCalendarInput:safe,googleCalendarSettings:false});} } catch(e) {}
     try{ const raw=localStorage.getItem('relay.drive'); const d=raw&&JSON.parse(raw); if(d&&d.folder) this.setState({drive:d,driveInput:d.folder}); }catch(e){}
     fetch('/api/config').then(r=>r.ok?r.json():null).then(c=>{ if(c) this.setState(x=>({cfg:c,driveInput:x.driveInput||c.driveFolderId||''})); }).catch(()=>{});
     try{ const raw=localStorage.getItem('relay.importedDocs'); const d=raw&&JSON.parse(raw); if(Array.isArray(d)) this.setState({docs:d}); }catch(e){}
@@ -1051,6 +1057,23 @@ class Component extends DCLogic {
     });
     this.toast('Disconnected from Google Drive');
   }
+  googleCalendarEmbed(value){
+    const input=String(value||'').trim();
+    if(!input || input.length>2048) return '';
+    let id=input;
+    if(/^https?:/i.test(input)) {
+      try { const url=new URL(input); if(url.protocol!=='https:' || url.hostname!=='calendar.google.com' || url.pathname!=='/calendar/embed') return ''; id=url.searchParams.get('src')||''; } catch(e) { return ''; }
+    }
+    if(!/^[A-Za-z0-9._%+@-]{3,320}$/.test(id) || !id.includes('@')) return '';
+    return 'https://calendar.google.com/calendar/embed?src='+encodeURIComponent(id);
+  }
+  saveGoogleCalendar(e){
+    e.preventDefault(); const url=this.googleCalendarEmbed(this.state.googleCalendarInput);
+    if(!url){this.setState({googleCalendarError:'Enter a valid Google Calendar ID or embed URL.'});return;}
+    try{localStorage.setItem('relay.googleCalendar',url);}catch(e){}
+    this.setState({googleCalendarUrl:url,googleCalendarSettings:false,googleCalendarError:''});
+  }
+  removeGoogleCalendar(){try{localStorage.removeItem('relay.googleCalendar');}catch(e){} this.setState({googleCalendarUrl:'',googleCalendarInput:'',googleCalendarSettings:true,googleCalendarError:''});}
   calendarStorageKey='relay-calendar-events-v1';
   loadCalendarEvents(){
     try {
@@ -1289,6 +1312,8 @@ class Component extends DCLogic {
       nudge:()=>{ if(s.nudged) return; this.setState({nudged:true}); this.toast('Interview invite sent to Priya'); },nudgeLabel:s.nudged?'Invite sent':'Send Priya an interview invite',
       exitStepLabel:done?'COMPLETE':'QUESTION '+(i+1)+' OF 4',exitSegs,exitQ:done?'Handoff filed.':qs[i][0],exitA:done?"It's in Docs now, and the incoming treasurer can read it or ask the Playbook about it.":qs[i][1],
       exitPrev:()=>this.setState({step:Math.max(0,i-1)}),exitNext:()=>{ if(i===3){ this.toast('Treasurer handoff filed to Docs'); this.addDoc({title:'Treasurer Handoff Interview (Maya Chen)',category:'handoff',event:'',year:'2026',author:'Maya Chen',text:qs.map(([qq,aa])=>'Q: '+qq+' A: '+aa).join(' ')}); } this.setState({step:done?0:i+1}); },exitNextLabel:done?'Start over':i===3?'Finish and file':'Next question',handoff,
+      googleCalendarUrl:s.googleCalendarUrl,googleCalendarInput:s.googleCalendarInput,googleCalendarSettings:s.googleCalendarSettings,googleCalendarHasUrl:!!s.googleCalendarUrl,googleCalendarHasError:!!s.googleCalendarError,googleCalendarError:s.googleCalendarError,
+      googleCalendarToggleLabel:s.googleCalendarSettings?'Hide settings':s.googleCalendarUrl?'Change calendar':'Add calendar',googleCalendarToggle:()=>this.setState(x=>({googleCalendarSettings:!x.googleCalendarSettings})),googleCalendarInputChange:e=>this.setState({googleCalendarInput:e.target.value,googleCalendarError:''}),googleCalendarSave:e=>this.saveGoogleCalendar(e),googleCalendarRemove:()=>this.removeGoogleCalendar(),
       driveLine,driveOpen:s.driveOpen,toggleDrive:()=>this.setState({driveOpen:!s.driveOpen}),driveInput:s.driveInput,setDriveInput:e=>this.setState({driveInput:e.target.value}),
       driveBtn,driveSync:()=>this.driveSync(),driveDisconnect:()=>this.driveDisconnect(),driveConnected:connected,driveDemo:!connected,
       driveNoCfg:!s.cfg.googleClientId,driveDomain:s.cfg.allowedDomain,driveHasDomain:!!s.cfg.allowedDomain,

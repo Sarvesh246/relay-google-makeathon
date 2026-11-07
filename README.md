@@ -193,3 +193,7 @@ No raster images. Icons are inline 24×24 stroke SVG paths (stroke-width 1.8, ro
 ## Events calendar
 
 Events now includes a Monday-first month calendar with previous/next navigation, a Today shortcut, date selection, and links to existing event plans. Add Event saves a title, date, optional time, and location in this browser; saved events survive reloads and can be removed from the selected day’s agenda. This calendar does not sync with Google Calendar. Historical plans without exact dates remain in the list below the calendar. Date logic in `calendar-model.js` is tested for leap years, year boundaries, Chicago time, and daylight-saving changes.
+
+### Google Calendar embed
+
+In Events, enter a Google Calendar ID or the `https://calendar.google.com/calendar/embed?...` URL from Google Calendar → Settings → your calendar → Integrate calendar. The embed is saved in the current browser and is separate from Relay’s local events; it does not synchronize them. Google only displays calendars to viewers who have permission, and a public calendar is visible to everyone.
