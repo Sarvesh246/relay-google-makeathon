@@ -1,5 +1,12 @@
 # Handoff: Relay — Student Org Officer Dashboard
 
+## Local preview
+
+With Node.js installed, run `npm run dev` and open http://localhost:3000.
+No dependency installation is needed. This serves the interactive standalone
+prototype, including the updated sidebar and dashboard styling. To use a
+different port, run `PORT=3001 npm run dev`.
+
 ## Overview
 Relay is a dashboard for student-organization officers (sample org: Aggie Robotics). It covers day-to-day ops (events, money, people, social posts) and continuity (officer handoffs, an archive of club docs). A slide-in "Playbook" panel answers questions from the club's docs with cited sources.
 

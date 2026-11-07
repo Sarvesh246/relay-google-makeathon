@@ -15,16 +15,152 @@
 @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,14px) scale(.96)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
 @keyframes shimmer{from{background-position:-240px 0}to{background-position:240px 0}}
-@keyframes batonIn{from{left:0}}</style></helmet>
+@keyframes batonIn{from{left:0}}</style><style>/* Sidebar surfaces are independent of the dashboard's brand palette. */
+.relay-sidebar {
+ --sbTx:#303544;--sbMu:#626777;--sbAc:#6576bb;
+ --sbSel:rgba(255,255,255,.45);--sbLine:rgba(255,255,255,.75);
+ background:radial-gradient(ellipse at 15% 28%,rgba(161,231,250,.64),transparent 35%),radial-gradient(ellipse at 95% 44%,rgba(182,181,241,.55),transparent 42%),radial-gradient(ellipse at 15% 79%,rgba(238,186,225,.54),transparent 36%),linear-gradient(145deg,#f7f8f9,#eeeff4) !important;
+ height:calc(100% - 20px) !important;margin:10px 0 10px 10px;
+ padding:20px 14px 14px !important;border:1px solid rgba(255,255,255,.9) !important;
+ border-radius:26px;box-shadow:inset 1px 1px 2px #fff,7px 8px 26px rgba(64,71,98,.09);
+ color:var(--sbTx) !important;isolation:isolate;
+}
+.relay-sidebar .relay-brand {height:44px !important;margin-bottom:18px !important;padding:0 10px !important;gap:12px !important;flex-shrink:0}
+.relay-sidebar .relay-brand > div:first-child {background:linear-gradient(135deg,#a5dce8,#6d6ccc) !important;box-shadow:inset 0 1px 1px rgba(255,255,255,.7),0 5px 12px rgba(99,112,169,.2);border-radius:12px !important}
+.relay-sidebar .relay-brand > div:first-child span {background:#fff !important}
+.relay-sidebar .relay-brand > div:last-child span {font-size:23px !important;letter-spacing:-.04em !important}
+.relay-sidebar .relay-org {border-radius:15px !important;padding:10px !important;background:rgba(255,255,255,.25) !important;border:1px solid rgba(255,255,255,.5) !important;flex-shrink:0}
+.relay-sidebar nav {margin-top:8px !important;gap:5px !important;padding:0 2px 16px;scrollbar-width:thin;scrollbar-color:rgba(100,110,150,.2) transparent}
+.relay-sidebar nav > div {padding:18px 12px 8px !important;font-size:9px !important;letter-spacing:.12em !important;color:#737889 !important;flex-shrink:0}
+.relay-sidebar nav button {
+ height:48px !important;min-height:48px;padding:0 14px !important;gap:14px !important;
+ border:1px solid transparent !important;border-radius:18px !important;
+ font-size:14px !important;font-weight:500 !important;color:var(--sbTx) !important;
+ background:transparent !important;flex-shrink:0;
+ transition:background .25s,box-shadow .25s,border-color .25s,transform .2s !important;
+}
+.relay-sidebar nav button svg {width:21px;height:21px;stroke-width:1.7;color:var(--sbTx) !important}
+.relay-sidebar nav button:hover {background:rgba(255,255,255,.36) !important;border-color:rgba(255,255,255,.55) !important}
+.relay-sidebar nav button[aria-current="page"] {
+ background:linear-gradient(120deg,rgba(255,255,255,.65),rgba(228,233,255,.38)) !important;
+ border-color:rgba(255,255,255,.95) !important;
+ box-shadow:inset 0 1px 2px rgba(255,255,255,.95),inset 0 -2px 5px rgba(159,174,220,.13),0 10px 18px -5px rgba(91,119,187,.45);
+ font-weight:600 !important;
+}
+.relay-sidebar nav button[aria-current="page"] svg {color:#465779 !important}
+.relay-sidebar nav button > span:last-child:not(:nth-child(2)) {background:rgba(255,255,255,.65) !important;color:#56618b !important;box-shadow:0 2px 5px rgba(74,88,130,.12)}
+.relay-sidebar button:focus-visible {outline:2px solid #6f80c4;outline-offset:2px}
+.relay-sidebar .relay-term {border-color:rgba(255,255,255,.75) !important;border-radius:18px !important;background:rgba(255,255,255,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.65);font-size:12px}
+.relay-sidebar .relay-profile {padding:14px 12px !important;border:1px solid rgba(255,255,255,.85) !important;border-radius:22px;background:linear-gradient(145deg,rgba(255,255,255,.63),rgba(255,255,255,.26));box-shadow:inset 0 1px 2px #fff,0 9px 16px -5px rgba(68,78,110,.22);margin:4px 0 9px;min-height:66px}
+.relay-sidebar .relay-profile > div:first-child {width:36px !important;height:36px !important;background:linear-gradient(135deg,#d6e7f3,#b9b9dd) !important;color:#475372 !important;box-shadow:0 0 0 3px rgba(255,255,255,.6)}
+.relay-sidebar .relay-collapse {border-radius:14px !important;height:32px !important;padding:0 16px !important;min-height:32px;color:var(--sbMu) !important}
+.relay-sidebar .relay-collapse:hover {background:rgba(255,255,255,.4) !important}
+.relay-sidebar[data-expanded="false"] {padding-left:10px !important;padding-right:10px !important;border-radius:24px}
+.relay-sidebar[data-expanded="false"] .relay-brand {padding:0 13px !important}
+.relay-sidebar[data-expanded="false"] .relay-org {padding:8px 18px !important;border-color:transparent !important;background:transparent !important}
+.relay-sidebar[data-expanded="false"] nav {padding-left:0;padding-right:0;overflow-y:auto}
+.relay-sidebar[data-expanded="false"] nav > div {padding-top:12px !important;padding-bottom:0 !important;height:12px}
+.relay-sidebar[data-expanded="false"] nav button {height:54px !important;min-height:54px;padding:0 20px !important;border-radius:18px !important;gap:20px !important}
+.relay-sidebar[data-expanded="false"] .relay-profile {padding:12px !important;min-height:62px;gap:18px !important}
+.relay-sidebar[data-expanded="false"] .relay-collapse {padding:0 23px !important;gap:20px !important}
+.relay-sidebar[data-theme="dark"] {
+ --sbTx:#e4e8f5;--sbMu:#b4bdd4;--sbAc:#acb9f0;--sbSel:rgba(255,255,255,.1);--sbLine:rgba(215,225,255,.15);
+ background:radial-gradient(ellipse at 15% 28%,rgba(54,106,134,.4),transparent 40%),radial-gradient(ellipse at 95% 44%,rgba(98,83,155,.35),transparent 45%),radial-gradient(ellipse at 15% 79%,rgba(139,74,124,.27),transparent 36%),#202634 !important;
+ border-color:rgba(211,223,255,.2) !important;box-shadow:inset 1px 1px 1px rgba(255,255,255,.12),7px 8px 26px rgba(0,0,0,.16);
+}
+.relay-sidebar[data-theme="dark"] .relay-org,.relay-sidebar[data-theme="dark"] .relay-term {background:rgba(255,255,255,.04) !important;border-color:rgba(255,255,255,.13) !important}
+.relay-sidebar[data-theme="dark"] nav > div {color:#a8b1c8 !important}
+.relay-sidebar[data-theme="dark"] nav button:hover {background:rgba(255,255,255,.07) !important;border-color:rgba(255,255,255,.15) !important}
+.relay-sidebar[data-theme="dark"] nav button[aria-current="page"] {background:linear-gradient(120deg,rgba(191,218,255,.2),rgba(179,166,239,.12)) !important;border-color:rgba(220,232,255,.4) !important;box-shadow:inset 0 1px 2px rgba(255,255,255,.2),0 10px 18px -5px rgba(7,13,34,.6)}
+.relay-sidebar[data-theme="dark"] nav button[aria-current="page"] svg {color:#c3d6ff !important}
+.relay-sidebar[data-theme="dark"] .relay-profile {background:linear-gradient(145deg,rgba(216,224,255,.13),rgba(255,255,255,.04));border-color:rgba(215,225,255,.25) !important;box-shadow:inset 0 1px 1px rgba(255,255,255,.12),0 9px 16px -5px rgba(0,0,0,.25)}
+@media (max-height:720px) {.relay-sidebar {padding-top:12px !important}.relay-sidebar .relay-brand {margin-bottom:10px !important}.relay-sidebar nav {gap:3px !important}.relay-sidebar nav button {height:40px !important;min-height:40px}.relay-sidebar nav > div {padding-top:13px !important}}
+@media (prefers-reduced-motion:reduce) {.relay-sidebar,.relay-sidebar * {transition:none !important}}
+</style><style>/* Dashboard-only presentation; sidebar surfaces keep their own styling. */
+.relay-app {background:#e8eaf1 !important}
+.relay-app[data-theme="dark"] {background:#171d2b !important}
+.relay-dashboard-shell {
+ --dash-text:#181d42;--dash-muted:#797e94;--dash-edge:rgba(255,255,255,.82);
+ --dash-surface:linear-gradient(135deg,rgba(255,255,255,.7),rgba(234,237,246,.58));
+ --dash-shadow:8px 12px 22px rgba(114,125,158,.19),-5px -5px 16px rgba(255,255,255,.72),inset 0 1px 1px rgba(255,255,255,.9);
+ background:radial-gradient(ellipse at 90% 10%,rgba(212,219,242,.6),transparent 48%),linear-gradient(140deg,#eef0f6,#e4e7ef);
+ border:1px solid var(--dash-edge);border-radius:28px;margin:10px 12px 10px 14px;
+ box-shadow:inset 0 1px 2px #fff,0 10px 30px rgba(101,113,150,.08);overflow:hidden;
+}
+.relay-dashboard-shell > header {border:0 !important;height:84px !important;padding:0 26px !important;gap:16px !important;color:var(--dash-text)}
+.relay-dashboard-shell > header > div > div:first-child {color:var(--dash-muted) !important;font-size:10px !important;letter-spacing:.07em !important}
+.relay-dashboard-shell > header > div > div:last-child {font-size:26px !important;font-weight:750 !important;letter-spacing:-.035em !important;margin-top:6px !important}
+.relay-dashboard-shell > header > button {border:1px solid rgba(255,255,255,.55) !important;background:var(--dash-surface) !important;box-shadow:6px 6px 12px rgba(117,130,164,.2),-4px -4px 10px rgba(255,255,255,.8);color:var(--dash-muted) !important;border-radius:50% !important;width:42px !important;height:42px !important}
+.relay-dashboard-shell > header > button:first-of-type {border-radius:28px !important;height:42px !important;padding-left:18px !important;background:linear-gradient(145deg,#e0e4ee,#edf0f7) !important;box-shadow:inset 4px 4px 8px rgba(117,130,164,.16),inset -3px -3px 6px rgba(255,255,255,.8)}
+.relay-dashboard-shell > header kbd {border:0 !important;background:rgba(255,255,255,.5) !important;border-radius:6px !important;color:var(--dash-muted) !important}
+.relay-dashboard-shell > main {padding:6px 26px 28px !important}
+.relay-overview {
+ --tx:var(--dash-text);--mu:var(--dash-muted);--card:#edf0f6;--sub:#e1e5f0;--line:#dce0eb;
+ --ac:#8293e7;--acHi:#8a7ce0;--onAc:#fff;--acT:#7162b3;--acS:#e6e2f5;
+ --readyEmpty:#cbd0df;--ok:#509b89;--okS:#e2efea;--warn:#897343;--warnS:#f1eadc;
+ gap:20px !important;color:var(--tx);
+}
+.relay-overview section,.relay-metrics > button {border:1px solid var(--dash-edge) !important;border-radius:23px !important;background:var(--dash-surface) !important;box-shadow:var(--dash-shadow) !important}
+.relay-metrics {gap:18px !important;border:0 !important;border-radius:0 !important;background:transparent !important;overflow:visible !important;grid-template-columns:repeat(4,minmax(0,1fr)) !important;order:0}
+.relay-metrics > button {padding:20px 19px !important;min-height:112px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s !important;color:var(--tx) !important}
+.relay-metrics > button:hover {transform:translateY(-3px);box-shadow:9px 15px 24px rgba(114,125,158,.23),-5px -5px 16px rgba(255,255,255,.8) !important}
+.relay-metrics > button > div:first-child {font-family:'Instrument Sans',sans-serif !important;letter-spacing:.035em !important;font-weight:600 !important;font-size:10px !important;color:var(--mu) !important}
+.relay-metrics > button > div:nth-child(2) > span:first-child {font-size:29px !important;font-weight:750 !important}
+.relay-metrics > button > div:last-child {font-size:11.5px !important;margin-top:7px !important}
+.relay-hero {order:1;color:var(--tx) !important;padding:26px 28px !important;gap:22px !important;min-height:220px;align-items:center}
+.relay-hero > div:first-child {background:radial-gradient(ellipse at 90% 50%,rgba(177,185,241,.35),transparent 60%) !important}
+.relay-hero > div:nth-child(2) {width:40% !important;opacity:.2 !important;background:repeating-linear-gradient(120deg,transparent 0 24px,#a4ace1 25px 26px,transparent 27px 50px) !important;mask-image:linear-gradient(90deg,transparent,#000)}
+.relay-hero-copy {flex-basis:340px !important;gap:10px !important}
+.relay-hero-copy > div:nth-child(2) {font-size:34px !important;font-weight:750 !important;letter-spacing:-.04em !important}
+.relay-hero-copy > div:nth-child(3) {color:var(--mu) !important}
+.relay-hero-copy > div:nth-child(4) {font-size:11px !important}
+.relay-hero-copy > div:nth-child(4) > span {background:rgba(255,255,255,.38) !important;border-color:rgba(255,255,255,.7) !important;color:var(--mu) !important;border-radius:8px !important}
+.relay-hero-copy > div:last-child {gap:12px !important}
+.relay-hero-copy > div:last-child > button {height:38px !important;border-radius:13px !important;font-size:12.5px !important}
+.relay-hero-copy > div:last-child > button:first-child {background:linear-gradient(120deg,#8b9ce8,#9c84dd) !important;color:#fff !important;box-shadow:0 6px 12px rgba(121,113,198,.25),inset 0 1px 1px rgba(255,255,255,.45)}
+.relay-hero-copy > div:last-child > button:last-child {background:rgba(255,255,255,.3) !important;color:var(--tx) !important;border-color:rgba(255,255,255,.8) !important;box-shadow:4px 5px 9px rgba(123,132,165,.12),inset 0 1px 1px #fff}
+.relay-countdown {width:146px;height:146px;align-items:center !important;padding:0 !important;border-radius:50%;background:linear-gradient(145deg,rgba(255,255,255,.7),rgba(215,222,242,.5));border:1px solid rgba(255,255,255,.7);box-shadow:7px 9px 18px rgba(128,136,175,.19),-6px -6px 16px rgba(255,255,255,.8),inset 0 0 0 9px rgba(255,255,255,.25)}
+.relay-countdown > div:first-child {font-size:76px !important;line-height:1 !important;color:#8793dc !important;letter-spacing:-.05em !important}
+.relay-countdown > div:last-child {color:var(--mu) !important;font-size:9px !important;margin-top:3px !important}
+.relay-overview-lower {order:2;gap:20px !important}
+.relay-overview-lower > section {flex:1.5 1 430px !important;padding:4px 8px 10px !important}
+.relay-overview-lower > div {gap:20px !important;flex:1 1 300px !important}
+.relay-overview-lower section > div:first-child {border-bottom:0 !important;padding:17px 12px !important}
+.relay-overview-lower section > div:first-child > span:first-child {font-size:18px !important;font-weight:700 !important;color:var(--tx) !important}
+.relay-task-row {margin:6px 4px 10px;padding:12px !important;border:1px solid rgba(255,255,255,.7) !important;border-radius:16px;background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(231,235,245,.3));box-shadow:4px 5px 9px rgba(128,138,167,.14),-3px -3px 8px rgba(255,255,255,.65);gap:10px !important;flex-wrap:wrap}
+.relay-task-row > div {flex-basis:180px !important}
+.relay-task-row > button:first-child {border-radius:50% !important;width:23px !important;height:23px !important;box-shadow:inset 2px 2px 4px rgba(128,138,170,.18),inset -2px -2px 4px rgba(255,255,255,.9)}
+.relay-task-row > button:last-child {border-radius:10px !important;background:var(--dash-surface) !important;border-color:rgba(255,255,255,.8) !important;box-shadow:3px 4px 7px rgba(128,138,167,.14),-2px -2px 5px rgba(255,255,255,.7);font-weight:500 !important}
+.relay-calendar {padding:4px 8px 12px}
+.relay-calendar > div:not(:first-child) {border:0 !important;padding:10px 12px !important}
+.relay-calendar > div:not(:first-child) > div:first-child {border-radius:12px;padding:8px 4px;background:var(--dash-surface);box-shadow:3px 4px 7px rgba(128,138,167,.15),-2px -2px 5px rgba(255,255,255,.65)}
+.relay-board {padding:8px 20px 20px !important}
+.relay-board > div:first-child {padding-left:0 !important;padding-right:0 !important}
+.relay-board > div:not(:first-child) {margin-top:15px !important}
+.relay-board > div:not(:first-child) > div {height:8px !important;box-shadow:inset 2px 2px 3px rgba(114,125,158,.14),inset -2px -2px 3px rgba(255,255,255,.75)}
+.relay-board > div:not(:first-child) > div > div:first-child {background:linear-gradient(90deg,#85b6ed,#9f7be5) !important}
+.relay-overview button:focus-visible,.relay-dashboard-shell > header button:focus-visible {outline:2px solid #8a7cce;outline-offset:3px}
+.relay-dashboard-shell[data-theme="dark"] {--dash-text:#e1e5fa;--dash-muted:#a0abc8;--dash-edge:rgba(179,194,237,.12);--dash-surface:linear-gradient(135deg,#282f43,#23293b);--dash-shadow:7px 10px 20px rgba(0,0,0,.26),-4px -4px 14px rgba(93,108,148,.08),inset 0 1px 1px rgba(186,203,255,.08);background:linear-gradient(140deg,#232a3d,#1d2332);box-shadow:inset 0 1px 1px rgba(186,203,255,.1)}
+.relay-dashboard-shell[data-theme="dark"] .relay-overview {--readyEmpty:#48526e;--sub:#1b2234;--line:#363f58;--card:#262e42;--acS:#393656;--ok:#7ec9b3;--warn:#d1b584}
+.relay-dashboard-shell[data-theme="dark"] > header > button {background:var(--dash-surface) !important;border-color:var(--dash-edge) !important;box-shadow:5px 5px 10px rgba(0,0,0,.2),-3px -3px 8px rgba(93,108,148,.1)}
+.relay-dashboard-shell[data-theme="dark"] > header > button:first-of-type {background:#202739 !important;box-shadow:inset 3px 3px 7px rgba(0,0,0,.2),inset -2px -2px 6px rgba(93,108,148,.1)}
+.relay-dashboard-shell[data-theme="dark"] .relay-countdown {background:linear-gradient(145deg,#303a55,#252d42);border-color:var(--dash-edge);box-shadow:6px 8px 16px rgba(0,0,0,.25),-4px -4px 12px rgba(93,108,148,.09),inset 0 0 0 9px rgba(166,184,246,.03)}
+.relay-dashboard-shell[data-theme="dark"] .relay-task-row,.relay-dashboard-shell[data-theme="dark"] .relay-hero-copy > div:nth-child(4) > span,.relay-dashboard-shell[data-theme="dark"] .relay-hero-copy > div:last-child > button:last-child {background:rgba(136,156,209,.06) !important;border-color:var(--dash-edge) !important;box-shadow:3px 4px 9px rgba(0,0,0,.15)}
+.relay-dashboard-shell[data-theme="dark"] .relay-task-row > button:last-child {border-color:var(--dash-edge) !important;box-shadow:3px 4px 8px rgba(0,0,0,.2)}
+.relay-dashboard-shell[data-theme="dark"] .relay-calendar > div:not(:first-child) > div:first-child {box-shadow:3px 4px 8px rgba(0,0,0,.2)}
+@media(max-width:1150px) {.relay-metrics {grid-template-columns:repeat(2,minmax(0,1fr)) !important}.relay-hero-copy {flex-basis:280px !important}.relay-countdown {width:120px;height:120px}}
+@media(max-width:760px) {.relay-dashboard-shell {margin:10px 8px;border-radius:22px}.relay-dashboard-shell > header {padding:0 16px !important;height:76px !important;gap:10px !important}.relay-dashboard-shell > header > div > div:last-child {font-size:21px !important}.relay-dashboard-shell > header > button:first-of-type {flex:0 0 42px !important;padding:0 !important;justify-content:center;min-width:42px !important}.relay-dashboard-shell > header > button:first-of-type > span,.relay-dashboard-shell > header > button:first-of-type > kbd {display:none}.relay-dashboard-shell > main {padding:4px 16px 22px !important}.relay-metrics {gap:12px !important}.relay-metrics > button {padding:16px 12px !important}.relay-metrics > button > div:nth-child(2) {flex-wrap:wrap;gap:5px !important}.relay-metrics > button > div:nth-child(2) > span:first-child {font-size:25px !important}.relay-hero {padding:22px !important}.relay-hero-copy > div:nth-child(2) {font-size:29px !important}.relay-countdown {width:104px;height:104px}.relay-countdown > div:first-child {font-size:58px !important}.relay-overview {gap:16px !important}}
+@media(prefers-reduced-motion:reduce) {.relay-overview * {transition:none !important;animation:none !important}}
+</style></helmet>
 <div style="{{ themeVars }}">
-<div style="height:100vh;display:flex;background:var(--bg);color:var(--tx);font:14px/1.45 'Instrument Sans',system-ui,sans-serif;overflow:hidden;position:relative;transition:background .3s,color .3s">
+<div class="relay-app" data-theme="{{ sideTheme }}" style="height:100vh;display:flex;background:var(--bg);color:var(--tx);font:14px/1.45 'Instrument Sans',system-ui,sans-serif;overflow:hidden;position:relative;transition:background .3s,color .3s">
 
-<aside style="{{ sideStyle }}">
-<div style="display:flex;align-items:center;gap:10px;height:40px;padding:0 4px;margin-bottom:10px">
+<aside class="relay-sidebar" data-expanded="{{ sideExpanded }}" data-theme="{{ sideTheme }}" style="{{ sideStyle }}">
+<div class="relay-brand" style="display:flex;align-items:center;gap:10px;height:40px;padding:0 4px;margin-bottom:10px">
 <div style="flex:none;width:34px;height:34px;border-radius:9px;background:var(--ac);display:flex;align-items:center;justify-content:center;gap:3px"><span style="width:5px;height:17px;border-radius:2px;background:var(--onAc);transform:skewX(-18deg) translateY(-2px)"></span><span style="width:5px;height:17px;border-radius:2px;background:var(--onAc);opacity:.5;transform:skewX(-18deg) translateY(2px)"></span></div>
 <div style="{{ labelStyle }}"><span style="font:800 20px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em">relay</span></div>
 </div>
-<div style="{{ orgStyle }}">
+<div class="relay-org" style="{{ orgStyle }}">
 <div style="flex:none;width:26px;height:26px;border-radius:7px;background:var(--sbSel);display:grid;place-items:center;font:600 10.5px/1 'Geist Mono',monospace">AR</div>
 <div style="{{ labelStyle }}"><div style="font-weight:600;font-size:13px;line-height:1.2">Aggie Robotics</div><div style="font:400 10.5px/1.3 'Geist Mono',monospace;color:var(--sbMu)">FALL '26 · 45 MEMBERS</div></div>
 </div>
@@ -32,7 +168,7 @@
 <sc-for list="{{ groups }}" as="g" hint-placeholder-count="3">
 <div style="{{ g.headStyle }}">{{ g.g }}</div>
 <sc-for list="{{ g.items }}" as="n" hint-placeholder-count="2">
-<button onClick="{{ n.go }}" title="{{ n.label }}" style="{{ n.style }}">
+<button onClick="{{ n.go }}" aria-current="{{ n.current }}" title="{{ n.label }}" style="{{ n.style }}">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="{{ n.iconStyle }}"><path d="{{ n.icon }}"></path></svg>
 <span style="{{ labelFlex }}">{{ n.label }}</span>
 <sc-if value="{{ n.hasBadge }}" hint-placeholder-val="{{ false }}"><span style="{{ n.badgeStyle }}">{{ n.badge }}</span></sc-if>
@@ -41,28 +177,28 @@
 </sc-for>
 </nav>
 <div style="flex:0 0 8px"></div>
-<div style="{{ termStyle }}">
+<div class="relay-term" style="{{ termStyle }}">
 <div style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.08em;color:var(--sbMu)">BATON PASS · APR 28</div>
 <div style="display:flex;align-items:baseline;gap:6px;margin:8px 0 8px"><span style="font:800 24px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">{{ handPct }}</span><span style="font-size:12px;color:var(--sbMu)">of handoffs captured</span></div>
 <div style="height:4px;border-radius:3px;background:var(--sbSel);overflow:hidden"><div style="{{ handBar }}"></div></div>
 </div>
-<div style="{{ meStyle }}">
+<div class="relay-profile" style="{{ meStyle }}">
 <div style="flex:none;width:30px;height:30px;border-radius:50%;background:var(--acHi);color:var(--ink);display:grid;place-items:center;font:700 11.5px/1 'Instrument Sans',sans-serif">JE</div>
 <div style="{{ labelStyle }}"><div style="font-size:13px;font-weight:600;line-height:1.2">Jordan Ellis</div><div style="font-size:11.5px;color:var(--sbMu)">President</div></div>
 </div>
-<button onClick="{{ toggleSide }}" title="{{ sideTitle }}" style="{{ collapseStyle }}" style-hover="background:var(--sbSel);color:var(--sbTx)">
+<button onClick="{{ toggleSide }}" class="relay-collapse" title="{{ sideTitle }}" style="{{ collapseStyle }}" style-hover="background:var(--sbSel);color:var(--sbTx)">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="{{ chevStyle }}"><path d="M15 6l-6 6 6 6"></path></svg>
 <span style="{{ labelFlex }}">Collapse</span>
 </button>
 </aside>
 
-<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div class="relay-dashboard-shell" data-theme="{{ sideTheme }}" style="flex:1;min-width:0;display:flex;flex-direction:column">
 <header style="flex:none;height:62px;display:flex;align-items:center;gap:12px;padding:0 20px;border-bottom:1px solid var(--line)">
 <div style="flex:1;min-width:0">
 <div style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.08em;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ eyebrow }}</div>
 <div style="font:700 22px/1.15 'Bricolage Grotesque',sans-serif;letter-spacing:-.025em;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ title }}</div>
 </div>
-<button onClick="{{ toggleAi }}" style="{{ cmdStyle }}" style-hover="border-color:var(--ac)">
+<button title="Ask the Playbook" aria-label="Ask the Playbook" onClick="{{ toggleAi }}" style="{{ cmdStyle }}" style-hover="border-color:var(--ac)">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 5v16M8 7h7"></path></svg>
 <span style="flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Ask the Playbook…</span>
 <span style="flex:none;font:500 11px/1 'Geist Mono',monospace;padding:4px 6px;border-radius:5px;border:1px solid var(--line);background:var(--sub)">⌘K</span>
@@ -74,11 +210,11 @@
 <div style="max-width:1320px;margin:0 auto">
 
 <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
-<div data-screen-label="Overview" style="display:flex;flex-direction:column;gap:12px;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
-<section style="position:relative;overflow:hidden;border-radius:14px;background:var(--ink);color:var(--inkTx);padding:20px 22px;display:flex;flex-wrap:wrap;gap:16px 28px">
+<div class="relay-overview" data-screen-label="Overview" style="display:flex;flex-direction:column;gap:12px;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
+<section class="relay-hero" style="position:relative;overflow:hidden;border-radius:14px;background:var(--ink);color:var(--inkTx);padding:20px 22px;display:flex;flex-wrap:wrap;gap:16px 28px">
 <div style="position:absolute;inset:0;background:repeating-linear-gradient(180deg,transparent 0 33px,var(--inkLine) 33px 34px);pointer-events:none"></div>
 <div style="position:absolute;top:0;bottom:0;right:0;width:230px;background:repeating-linear-gradient(115deg,var(--acHi) 0 2px,transparent 2px 14px);opacity:.14;pointer-events:none"></div>
-<div style="position:relative;flex:1 1 420px;min-width:0;display:flex;flex-direction:column;gap:8px">
+<div class="relay-hero-copy" style="position:relative;flex:1 1 420px;min-width:0;display:flex;flex-direction:column;gap:8px">
 <div style="font:500 11px/1 'Geist Mono',monospace;letter-spacing:.1em;color:var(--acHi)">NEXT EVENT · SAT NOV 15 · 6:00 PM</div>
 <div style="font:800 42px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.035em">Robo-Rumble 2026</div>
 <div style="font-size:13.5px;color:var(--inkMu)">Rec Center · 65 RSVPs · $2,500 budget</div>
@@ -92,13 +228,13 @@
 <button onClick="{{ askRumble }}" style="cursor:pointer;height:36px;padding:0 14px;border-radius:9px;background:transparent;color:var(--inkTx);border:1px solid rgba(255,255,255,.18);font-weight:600;font-size:13.5px;transition:background .15s" style-hover="background:rgba(255,255,255,.08)">What went wrong last year?</button>
 </div>
 </div>
-<div style="position:relative;flex:none;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;padding-right:8px">
+<div class="relay-countdown" style="position:relative;flex:none;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;padding-right:8px">
 <div style="font:800 128px/.8 'Bricolage Grotesque',sans-serif;letter-spacing:-.06em;color:var(--acHi)">8</div>
 <div style="font:500 11px/1 'Geist Mono',monospace;letter-spacing:.12em;color:var(--inkMu);margin-top:10px">DAYS OUT</div>
 </div>
 </section>
 
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:0;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden">
+<div class="relay-metrics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:0;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden">
 <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4"><button onClick="{{ k.go }}" style="background:var(--card);border:0;box-shadow:1px 1px 0 var(--line);text-align:left;padding:12px 16px;cursor:pointer;color:var(--tx);transition:background .15s" style-hover="background:var(--sub)">
 <div style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.08em;color:var(--mu)">{{ k.l }}</div>
 <div style="display:flex;align-items:baseline;gap:8px;margin-top:8px"><span style="font:700 26px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.025em">{{ k.v }}</span><span style="{{ k.ds }}">{{ k.d }}</span></div>
@@ -106,7 +242,7 @@
 </button></sc-for>
 </div>
 
-<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:stretch">
+<div class="relay-overview-lower" style="display:flex;flex-wrap:wrap;gap:12px;align-items:stretch">
 <section style="flex:1.6 1 480px;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh)">
 <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)">
 <span style="font:700 15px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em">This week</span>
@@ -115,7 +251,7 @@
 <div style="width:72px;height:4px;border-radius:3px;background:var(--sub);overflow:hidden"><div style="{{ taskBar }}"></div></div>
 </div>
 <sc-for list="{{ tasks }}" as="t" hint-placeholder-count="5">
-<div style="{{ t.row }}">
+<div class="relay-task-row" style="{{ t.row }}">
 <button onClick="{{ t.toggle }}" title="Mark done" style="{{ t.box }}"><sc-if value="{{ t.done }}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" style="animation:pop .35s cubic-bezier(.2,.8,.2,1) both"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></sc-if></button>
 <div style="flex:1;min-width:0"><div style="{{ t.ts }}">{{ t.t }}</div><div style="font-size:12.5px;color:var(--mu);margin-top:1px">{{ t.m }}</div></div>
 <span style="{{ t.dueS }}">{{ t.due }}</span>
@@ -125,14 +261,14 @@
 </section>
 
 <div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:12px">
-<section style="background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh)">
+<section class="relay-calendar" style="background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh)">
 <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)"><span style="font:700 15px/1 'Bricolage Grotesque',sans-serif">Calendar</span><span style="font:500 11.5px/1 'Geist Mono',monospace;color:var(--mu)">NEXT 4</span></div>
 <sc-for list="{{ cal }}" as="c" hint-placeholder-count="4"><div style="display:flex;gap:12px;align-items:center;padding:9px 16px;border-top:1px solid var(--line)">
 <div style="flex:none;width:40px;text-align:center"><div style="font:500 10px/1 'Geist Mono',monospace;letter-spacing:.06em;color:var(--acT)">{{ c.m }}</div><div style="font:700 19px/1.1 'Bricolage Grotesque',sans-serif">{{ c.d }}</div></div>
 <div style="min-width:0"><div style="font-weight:600;font-size:13.5px">{{ c.t }}</div><div style="font-size:12.5px;color:var(--mu)">{{ c.w }}</div></div>
 </div></sc-for>
 </section>
-<section style="background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);padding:12px 16px">
+<section class="relay-board" style="background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);padding:12px 16px">
 <div style="display:flex;align-items:center;justify-content:space-between"><span style="font:700 15px/1 'Bricolage Grotesque',sans-serif">Handoff board</span><button onClick="{{ goHand }}" style="border:0;background:transparent;color:var(--acT);font-weight:600;font-size:12.5px;cursor:pointer;padding:0">Open</button></div>
 <sc-for list="{{ lanes }}" as="r" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:78px minmax(0,1fr) 36px;gap:10px;align-items:center;margin-top:11px">
 <span style="font-size:12.5px;font-weight:600">{{ r.role }}</span>
@@ -441,7 +577,7 @@ class Component extends DCLogic {
     const ck=[['room','Rec Center booked','Not filed yet · needs 14 days'],['cater','Food ordered','Brazos needs 3 weeks · pizza fallback'],['post','Promo post live',postOk?'Scheduled Thu 10am':'Waiting on approval'],['judges','Alumni judges confirmed','4 of 4'],['brackets','Brackets set up','Challonge'],['budget','Budget approved','$2,500']];
     const ckDone=k=>k==='post'?postOk:!!s.check[k];
     const nReady=ck.filter(([k])=>ckDone(k)).length;
-    const readySegs=ck.map(([k],i)=>'width:22px;height:6px;border-radius:2px;transition:background .4s;background:'+(ckDone(k)?'var(--acHi)':'rgba(255,255,255,.14)'));
+    const readySegs=ck.map(([k],i)=>'width:22px;height:6px;border-radius:2px;transition:background .4s;background:'+(ckDone(k)?'var(--acHi)':'var(--readyEmpty,rgba(255,255,255,.14))'));
     const missing=ck.filter(([k])=>!ckDone(k)).slice(0,2).map(([k,l])=>({room:'Room not booked',cater:'Food not ordered',post:'Post not approved'}[k]||l));
     const checklist=ck.map(([k,l,note],i)=>{const dn=ckDone(k);return {t:l,note,done:dn,
       toggle:()=>{ if(k==='post'){this.setState({tab:'mkt'});return;} this.setState(x=>({check:{...x.check,[k]:!x.check[k]}})); },
@@ -466,7 +602,7 @@ class Component extends DCLogic {
     const badges={mem:unpaid?String(unpaid):'',mkt:pendingPosts?String(pendingPosts):''};
     const G=[['TODAY',[['home','Overview']]],['RUN THE CLUB',[['evt','Events'],['fin','Money'],['mem','People'],['mkt','Posts']]],['PASS IT ON',[['hand','Handoff'],['arc','Docs']]]];
     const groups=G.map(([g,items])=>({g,headStyle:"font:500 10px/1 'Geist Mono',monospace;letter-spacing:.1em;color:var(--sbMu);padding:16px 10px 7px;white-space:nowrap;overflow:hidden;transition:opacity .2s;opacity:"+(o?1:0),
-      items:items.map(([id,label])=>{const a=t===id;return {label,icon:I[id],badge:badges[id]||'',hasBadge:!!badges[id],go:go(id),
+      items:items.map(([id,label])=>{const a=t===id;return {current:a?'page':'false',label,icon:I[id],badge:badges[id]||'',hasBadge:!!badges[id],go:go(id),
         iconStyle:'flex:none;transition:color .2s;color:'+(a?'var(--sbAc)':'currentColor'),
         badgeStyle:"flex:none;min-width:18px;height:18px;padding:0 5px;border-radius:9px;display:grid;place-items:center;font:600 10.5px/1 'Geist Mono',monospace;background:var(--ac);color:var(--onAc);"+(o?'':'position:absolute;top:3px;right:6px;min-width:14px;height:14px;font-size:9px;padding:0 3px')+';transition:all .2s',
         style:'position:relative;display:flex;align-items:center;gap:11px;height:36px;padding:0 11px;border:0;cursor:pointer;border-radius:9px;font-size:13.5px;width:100%;transition:background .2s,color .2s;font-weight:'+(a?600:500)+';color:'+(a?'var(--sbTx)':'var(--sbMu)')+';background:'+(a?'var(--sbSel)':'transparent')};})}));
@@ -535,8 +671,8 @@ class Component extends DCLogic {
     const sugMap={home:[['What went wrong at Robo-Rumble last year?','rumble'],['Who do we call for catering?','cater'],['How did we fund the spring gala?','gala']],evt:[['How do we book a room on short notice?','room'],['Who do we call for catering?','cater']],fin:[['Where does most of our money go?','spend'],['How did we fund the spring gala?','gala']],mem:[['Who can run for officer?','elig']],mkt:[['Which posts get the most turnout?','posts']],hand:[["What did last year's treasurer leave undone?",'treas']],arc:[['How did we fund the spring gala?','gala'],['How do we book a room?','room']]};
     const sugs=(sugMap[t]||[]).map(([q,k])=>({q,go:()=>this.ask(q,k)}));
     const submit=e=>{e.preventDefault();const q=s.draft.trim();if(!q)return;this.ask(q,this.classify(q.toLowerCase()));};
-    const W=o?236:68;
-    return {themeVars,groups,labelStyle,labelFlex,
+    const W=o?260:84;
+    return {themeVars,groups,labelStyle,labelFlex,sideExpanded:o?'true':'false',sideTheme:d?'dark':'light',
       sideStyle:'flex:none;height:100%;min-height:0;width:'+W+'px;transition:width .32s '+E+';display:flex;flex-direction:column;padding:12px 10px;background:var(--sb);color:var(--sbTx);border-right:1px solid var(--sbLine);overflow:hidden;position:relative;z-index:3',
       orgStyle:'display:flex;align-items:center;gap:10px;padding:7px 6px;border-radius:9px;border:1px solid var(--sbLine);background:var(--sbSel);transition:padding .3s',
       termStyle:'flex:none;border-radius:10px;border:1px solid var(--sbLine);padding:12px;margin-bottom:10px;white-space:nowrap;overflow:hidden;transition:opacity .2s,max-height .32s '+E+',padding .32s,margin .32s,border-color .2s;opacity:'+(o?1:0)+';max-height:'+(o?'120px':'0')+(o&&!this.short?'':';padding:0 12px;margin-bottom:0;border-color:transparent;opacity:0;max-height:0'),
