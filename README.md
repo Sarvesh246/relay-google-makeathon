@@ -22,7 +22,19 @@ No key? The Playbook still works with its built-in sample answers, so demos neve
 
 Heads up: imported docs are saved in the browser for now (so they follow that officer's browser, not the whole club). Moving them to shared storage is the next step.
 
-`npm test` runs the retrieval and API tests (no network or key needed).
+### Marketing posts (Posts tab)
+
+Type what the post is about, hit **Create post**, get a finished 4:5 graphic plus caption. Posts look consistent because the AI never designs anything: it only proposes words. The layout, fonts, colors and motifs are fixed in `poster.js`, and every post is drawn by that one renderer.
+
+Guardrails, enforced in code (`lib/brand.mjs`, `api/post.mjs`) rather than just asked for in a prompt:
+- **No invented facts.** Dates, times, places and prices only appear if you typed them. If the model gets one wrong, Relay uses your version; if you didn't give one, it's left out and Relay tells you what's missing.
+- **No fake imagery.** Nano Banana (`gemini-2.5-flash-image`) may only draw flat abstract graphics. Its prompt is built from fixed menus, so nothing you type reaches the image model. A second Gemini pass inspects the result and rejects people, faces, photos, realistic scenes, text and logos. Anything rejected (or if inspection fails) is replaced by a built-in graphic.
+- **Real photos only.** "Add a real photo" drops your own photo into the template. Nothing photographic is ever generated.
+- **Fixed brand.** Two templates, six motifs, two accent colors, club fonts, capped text lengths, no emoji or links, hashtags from an allow-list.
+
+Google Flow has no public API, so it isn't wired in. Video would also cut against the no-fake-footage rule. The posts use Gemini and Nano Banana through the same `GEMINI_API_KEY`; set `GEMINI_IMAGE_MODEL` to change the image model.
+
+`npm test` runs the retrieval, guardrail and API tests (no network or key needed).
 
 ## Overview
 Relay is a dashboard for student-organization officers (sample org: Aggie Robotics). It covers day-to-day ops (events, money, people, social posts) and continuity (officer handoffs, an archive of club docs). A slide-in "Playbook" panel answers questions from the club's docs with cited sources.

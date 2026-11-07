@@ -5,6 +5,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { renderIndex } from './scripts/build-site.mjs';
 import { POST as chat } from './api/chat.mjs';
+import { POST as post } from './api/post.mjs';
 
 // Tiny .env.local loader so local dev matches Vercel without a dependency.
 for (const name of ['.env.local', '.env']) {
@@ -33,10 +34,10 @@ async function readBody(req, limit = 512 * 1024) {
 const server = createServer(async (req, res) => {
   const pathname = new URL(req.url, 'http://localhost').pathname;
   try {
-    if (pathname === '/api/chat') {
+    if (pathname === '/api/chat' || pathname === '/api/post') {
       if (req.method !== 'POST') return void res.writeHead(405, { Allow: 'POST' }).end();
       const body = await readBody(req);
-      const response = await chat(new Request('http://localhost/api/chat', { method: 'POST', headers: { 'content-type': 'application/json' }, body }));
+      const response = await (pathname === '/api/post' ? post : chat)(new Request('http://localhost' + pathname, { method: 'POST', headers: { 'content-type': 'application/json' }, body }));
       res.writeHead(response.status, { 'Content-Type': 'application/json', ...nostore });
       return void res.end(await response.text());
     }
@@ -46,9 +47,9 @@ const server = createServer(async (req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', ...nostore });
       return void res.end(req.method === 'HEAD' ? undefined : html);
     }
-    if (pathname === '/support.js') {
+    if (pathname === '/support.js' || pathname === '/poster.js') {
       res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8', ...nostore });
-      return void res.end(await readFile(new URL('support.js', import.meta.url)));
+      return void res.end(await readFile(new URL(pathname.slice(1), import.meta.url)));
     }
     res.writeHead(404).end('Not found');
   } catch (error) {

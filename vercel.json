@@ -2,6 +2,7 @@
   "buildCommand": "node scripts/build-site.mjs",
   "outputDirectory": "dist",
   "functions": {
-    "api/chat.mjs": { "includeFiles": "knowledge/**", "maxDuration": 30 }
+    "api/chat.mjs": { "maxDuration": 30 },
+    "api/post.mjs": { "maxDuration": 60 }
   }
 }

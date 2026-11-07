@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
+<script src="./poster.js"></script>
 </head>
 <body>
 <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#16161D"/><rect x="30" y="30" width="40" height="40" rx="10" fill="#FF5A1F"/><rect x="41" y="38" width="6" height="22" rx="2" fill="#17130F" transform="skewX(-18) translate(14 0)"/><rect x="51" y="42" width="6" height="22" rx="2" fill="#17130F" opacity=".5" transform="skewX(-18) translate(14 0)"/></svg></template>
@@ -464,25 +465,38 @@
 <div class="relay-screen" data-screen-label="Posts" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
 <section style="flex:1 1 320px;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);padding:14px 16px 16px">
 <div style="font:700 15px/1 'Bricolage Grotesque',sans-serif">New post</div>
-<div style="font-size:12.5px;color:var(--mu);margin-top:4px">Write the facts. Relay turns it into a caption that sounds like your past posts.</div>
+<div style="font-size:12.5px;color:var(--mu);margin-top:4px">Describe the post in plain words. Relay writes it and lays it out in the club template. It only uses facts you typed and never makes fake photos.</div>
 <textarea value="{{ mktDraft }}" onChange="{{ setMkt }}" rows="4" style="width:100%;margin:12px 0 10px;padding:10px 12px;border:1px solid var(--line);outline:0;border-radius:10px;background:var(--sub);color:var(--tx);font-size:14px;line-height:1.5;resize:vertical;transition:border-color .15s,box-shadow .15s" style-focus="border-color:var(--ac);box-shadow:0 0 0 3px var(--acS)"></textarea>
 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
 <sc-for list="{{ tones }}" as="tn" hint-placeholder-count="3"><button onClick="{{ tn.go }}" style="{{ tn.style }}">{{ tn.l }}</button></sc-for>
 <span style="flex:1"></span>
 <button onClick="{{ generate }}" style="border:0;cursor:pointer;height:36px;padding:0 16px;border-radius:9px;background:var(--ac);color:var(--onAc);font-weight:600;font-size:13.5px;transition:transform .15s" style-active="transform:scale(.97)">{{ genLabel }}</button>
 </div>
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px">
+<button onClick="{{ toggleArt }}" title="Nano Banana draws an abstract graphic background. It is inspected and replaced by a built-in graphic if it shows people, photos or text." style="{{ artChip }}">AI graphic background</button>
+<sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ true }}"><label style="height:30px;padding:0 11px;border-radius:10px;border:1px dashed var(--line);display:inline-flex;align-items:center;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--mu)">Add a real photo<input type="file" accept="image/*" onChange="{{ pickPhoto }}" style="display:none"></label></sc-if>
+<sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><button onClick="{{ clearPhoto }}" style="height:30px;padding:0 11px;border-radius:10px;border:1px solid var(--ok);background:var(--okS);color:var(--ok);cursor:pointer;font-size:12.5px;font-weight:600">Photo attached · remove</button></sc-if>
+</div>
+<div style="font:500 10.5px/1.5 'Geist Mono',monospace;letter-spacing:.04em;color:var(--mu);margin-top:10px">GUARDRAILS: CLUB FONTS + COLORS · ONLY YOUR FACTS · NO AI PEOPLE OR PHOTOS</div>
+<sc-if value="{{ hasFlags }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;display:flex;flex-direction:column;gap:6px"><sc-for list="{{ flags }}" as="f" hint-placeholder-count="1"><div style="font-size:12.5px;line-height:1.45;padding:8px 10px;border-radius:9px;background:var(--warnS);color:var(--warn)">{{ f }}</div></sc-for></div></sc-if>
+<sc-if value="{{ hasPv }}" hint-placeholder-val="{{ false }}"><div style="margin-top:14px;animation:rise .4s cubic-bezier(.2,.8,.2,1) both"><img src="{{ pvSrc }}" alt="Generated post preview" style="display:block;width:100%;max-width:320px;aspect-ratio:4/5;border-radius:14px;box-shadow:0 14px 34px rgba(22,22,29,.22)"><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button onClick="{{ downloadPost }}" style="border:0;cursor:pointer;height:32px;padding:0 14px;border-radius:9px;background:var(--tx);color:var(--bg);font-weight:600;font-size:12.5px">Download PNG</button><button onClick="{{ copyCap }}" style="cursor:pointer;height:32px;padding:0 14px;border-radius:9px;border:1px solid var(--line);background:var(--card);font-weight:600;font-size:12.5px">Copy caption</button></div></div></sc-if>
 </section>
 <section style="flex:1.5 1 440px;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);overflow:hidden">
 <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)"><span style="font:700 15px/1 'Bricolage Grotesque',sans-serif">Queue</span><span style="font:500 11.5px/1 'Geist Mono',monospace;color:var(--mu)">{{ queueLabel }}</span></div>
 <sc-if value="{{ writing }}" hint-placeholder-val="{{ false }}"><div style="display:grid;grid-template-columns:84px minmax(0,1fr);gap:14px;padding:14px 16px;border-bottom:1px solid var(--line)"><div style="aspect-ratio:4/5;border-radius:8px;background:linear-gradient(90deg,var(--sub) 0,var(--line) 50%,var(--sub) 100%);background-size:480px 100%;animation:shimmer 1.1s linear infinite"></div><div style="display:flex;flex-direction:column;gap:8px;padding-top:4px"><div style="height:10px;border-radius:5px;width:90%;background:linear-gradient(90deg,var(--sub) 0,var(--line) 50%,var(--sub) 100%);background-size:480px 100%;animation:shimmer 1.1s linear infinite"></div><div style="height:10px;border-radius:5px;width:70%;background:linear-gradient(90deg,var(--sub) 0,var(--line) 50%,var(--sub) 100%);background-size:480px 100%;animation:shimmer 1.1s linear infinite"></div></div></div></sc-if>
 <sc-for list="{{ posts }}" as="p" hint-placeholder-count="2"><div style="display:grid;grid-template-columns:84px minmax(0,1fr);gap:14px;padding:14px 16px;border-bottom:1px solid var(--line);animation:rise .4s cubic-bezier(.2,.8,.2,1) both">
+<div style="min-width:0">
+<sc-if value="{{ p.hasImg }}" hint-placeholder-val="{{ false }}"><button onClick="{{ p.view }}" title="Preview" style="display:block;width:100%;padding:0;border:0;background:none;cursor:pointer"><img src="{{ p.img }}" alt="{{ p.title }}" style="display:block;width:100%;aspect-ratio:4/5;border-radius:8px;object-fit:cover;box-shadow:0 4px 12px rgba(22,22,29,.18)"></button></sc-if>
+<sc-if value="{{ p.noImg }}" hint-placeholder-val="{{ true }}">
 <div style="position:relative;overflow:hidden;aspect-ratio:4/5;border-radius:8px;background:var(--ink);color:var(--inkTx);padding:8px;display:flex;flex-direction:column;justify-content:space-between">
 <div style="position:absolute;inset:0;background:repeating-linear-gradient(180deg,transparent 0 11px,var(--inkLine) 11px 12px)"></div>
 <div style="position:relative;font:800 13px/.95 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;color:var(--acHi);text-transform:uppercase">{{ p.title }}</div>
 <div style="position:relative;font:500 8px/1.2 'Geist Mono',monospace;letter-spacing:.06em">{{ p.meta }}</div>
 </div>
+</sc-if>
+</div>
 <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
-<div style="line-height:1.5;text-wrap:pretty">{{ p.cap }}</div>
+<div style="line-height:1.5;text-wrap:pretty;white-space:pre-line">{{ p.cap }}</div>
 <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span style="{{ p.pill }}">{{ p.status }}</span><span style="flex:1"></span>
 <sc-if value="{{ p.pending }}" hint-placeholder-val="{{ true }}"><button onClick="{{ p.approve }}" style="border:0;cursor:pointer;height:30px;padding:0 13px;border-radius:8px;background:var(--tx);color:var(--bg);font-weight:600;font-size:12.5px;transition:transform .15s" style-active="transform:scale(.96)">Approve · Thu 10am</button></sc-if></div>
 </div>
@@ -613,7 +627,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Vermilion&quot;,&quot;Cobalt&quot;,&quot;Maroon&quot;],&quot;default&quot;:&quot;Vermilion&quot;,&quot;tsType&quot;:&quot;'Vermilion'|'Cobalt'|'Maroon'&quot;,&quot;section&quot;:&quot;Brand&quot;},&quot;sidebar&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Ink&quot;,&quot;Paper&quot;],&quot;default&quot;:&quot;Ink&quot;,&quot;tsType&quot;:&quot;'Ink'|'Paper'&quot;,&quot;section&quot;:&quot;Brand&quot;},&quot;startTab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;evt&quot;,&quot;fin&quot;,&quot;mem&quot;,&quot;mkt&quot;,&quot;hand&quot;,&quot;arc&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Prototype&quot;}}">
 class Component extends DCLogic {
-  state = { docs:[], impOpen:false, impT:'', impC:'lessons', impE:'', impY:'2026', impX:'', fu:[], tab:null, dark:false, side:true, ai:false, draft:'', typing:false, toast:null, evt:0, est:false, memF:'all', step:2, q:'', role:'Treasurer', reminded:false, nudged:false, writing:false, tone:'Hype',
+  state = { useArt:true, photo:null, flags:[], pv:null, docs:[], impOpen:false, impT:'', impC:'lessons', impE:'', impY:'2026', impX:'', fu:[], tab:null, dark:false, side:true, ai:false, draft:'', typing:false, toast:null, evt:0, est:false, memF:'all', step:2, q:'', role:'Treasurer', reminded:false, nudged:false, writing:false, tone:'Hype',
     check:{room:false,cater:false,judges:true,brackets:true,budget:true}, tasks:{},
     mkt:'Robo-Rumble scrimmage, Sat Nov 15, 6pm at the Rec Center. Free pizza. Bring your bot.',
     msgs:[{r:'a',text:'Ask how something was done before. Every answer links to the doc it came from.',src:[]}],
@@ -669,6 +683,34 @@ class Component extends DCLogic {
       return {docs};
     });
   }
+  async createPost(){
+    const s=this.state, prompt=s.mkt.trim();
+    if(s.writing) return;
+    if(!prompt){ this.toast('Describe the post first.'); return; }
+    this.setState({writing:true,flags:[]});
+    let res=null;
+    try{
+      const r=await fetch('/api/post',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({prompt,tone:s.tone,art:s.useArt,docs:s.docs})});
+      if(r.ok) res=await r.json();
+    }catch(e){}
+    // No key or API down: still produce a legit post from only what was typed, using the same template.
+    if(!res||!res.spec) res={spec:window.RelayPoster.fallbackSpec(prompt,s.tone),flags:['Offline mode: the layout uses only what you typed. Add the API key for AI-written copy and artwork.'],art:null};
+    try{
+      const out=await window.RelayPoster.compose(res.spec,{artSrc:res.art&&res.art.dataUrl,photoSrc:s.photo});
+      const post={title:res.spec.headline,meta:[res.spec.date,res.spec.place].filter(Boolean).join(' · ')||'NEW POST',cap:res.spec.caption+'\n'+res.spec.hashtags.join(' '),st:0,img:out.thumb,full:out.full,spec:res.spec};
+      this.setState(x=>({writing:false,flags:res.flags||[],posts:[post,...x.posts],pv:post}));
+      this.toast('Post ready for approval');
+    }catch(e){ this.setState({writing:false}); this.toast('Could not draw the post. Try again.'); }
+  }
+  pickPhoto(e){
+    const f=e.target.files&&e.target.files[0]; if(!f) return;
+    if(!/^image\//.test(f.type)||f.size>8e6){ this.toast('Pick an image under 8 MB.'); return; }
+    const r=new FileReader(); r.onload=()=>this.setState({photo:String(r.result)}); r.readAsDataURL(f);
+  }
+  downloadPost(){
+    const p=this.state.pv; if(!p) return;
+    const a=document.createElement('a'); a.href=p.full; a.download='relay-post-'+p.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'.png'; a.click();
+  }
   classify(l){ const m=[[/rumble|scrim|last year/,'rumble'],[/kickoff/,'kick'],[/workshop|solder/,'work'],[/gala|fund|sponsor/,'gala'],[/cater|food|vendor|pizza/,'cater'],[/room|book/,'room'],[/spend|expens|cost|budget/,'spend'],[/elig|run for|officer/,'elig'],[/post|instagram|caption/,'posts'],[/treasurer|undone|loose/,'treas']]; const h=m.find(([r])=>r.test(l)); return h?h[1]:'fb'; }
   renderVals(){
     const s=this.state, d=s.dark, o=s.side, t=s.tab||this.props.startTab||'home';
@@ -690,7 +732,7 @@ class Component extends DCLogic {
     const labelFlex='flex:1;text-align:left;'+labelStyle;
     // data
     const pendingPosts=s.posts.filter(p=>!p.st).length;
-    const postOk=s.posts.some(p=>p.title.startsWith('Robo')&&p.st===1);
+    const postOk=s.posts.some(p=>/^robo/i.test(p.title)&&p.st===1);
     const ck=[['room','Rec Center booked','Not filed yet · needs 14 days'],['cater','Food ordered','Brazos needs 3 weeks · pizza fallback'],['post','Promo post live',postOk?'Scheduled Thu 10am':'Waiting on approval'],['judges','Alumni judges confirmed','4 of 4'],['brackets','Brackets set up','Challonge'],['budget','Budget approved','$2,500']];
     const ckDone=k=>k==='post'?postOk:!!s.check[k];
     const nReady=ck.filter(([k])=>ckDone(k)).length;
@@ -732,7 +774,7 @@ class Component extends DCLogic {
       ['hand','Finish the treasurer handoff with Maya',Math.min(s.step,4)+' of 4 questions answered','Nov 20','mu','Continue',go('hand',{role:'Treasurer'})]];
     const isDone=k=>k==='post'?postOk:k==='dues'?s.reminded:k==='room'?!!s.check.room:k==='cater'?!!s.check.cater:!!s.tasks[k];
     const tasks=tdef.map(([k,tt,m,due,tone,cta,act],i)=>{const dn=isDone(k);return {t:tt,m,due,cta,go:act,done:dn,
-      toggle:()=>{ if(k==='room'||k==='cater') this.setState(x=>({check:{...x.check,[k]:!x.check[k]}})); else if(k==='post'){ this.setState(x=>({posts:x.posts.map(p=>p.title.startsWith('Robo')?{...p,st:p.st?0:1}:p)})); } else if(k==='dues') this.setState(x=>({reminded:!x.reminded})); else this.setState(x=>({tasks:{...x.tasks,[k]:!x.tasks[k]}})); },
+      toggle:()=>{ if(k==='room'||k==='cater') this.setState(x=>({check:{...x.check,[k]:!x.check[k]}})); else if(k==='post'){ this.setState(x=>({posts:x.posts.map(p=>/^robo/i.test(p.title)?{...p,st:p.st?0:1}:p)})); } else if(k==='dues') this.setState(x=>({reminded:!x.reminded})); else this.setState(x=>({tasks:{...x.tasks,[k]:!x.tasks[k]}})); },
       row:rowA(i,'display:flex;align-items:center;gap:12px;padding:10px 16px;border-top:'+(i?'1px solid var(--line)':'0')+';transition:opacity .3s;opacity:'+(dn?.55:1)),
       box:'flex:none;width:20px;height:20px;border-radius:6px;display:grid;place-items:center;cursor:pointer;padding:0;transition:background .2s,border-color .2s,transform .15s;border:1.5px solid '+(dn?'var(--ok)':'var(--line)')+';background:'+(dn?'var(--ok)':'var(--card)')+';color:'+(d?'#0D0E13':'#fff'),
       ts:'font-weight:600;transition:color .3s;text-decoration:'+(dn?'line-through':'none')+';text-decoration-color:var(--mu);color:'+(dn?'var(--mu)':'var(--tx)'),
@@ -765,7 +807,7 @@ class Component extends DCLogic {
       style:'position:relative;z-index:1;width:116px;height:30px;display:flex;align-items:center;justify-content:center;gap:6px;border:0;background:transparent;cursor:pointer;font-size:13px;font-weight:600;transition:color .2s;color:'+(j===fi?'var(--tx)':'var(--mu)')}));
     const members=memAll.filter(fdef[fi][2]).map((m,i)=>({...m,row:rowA(i,'display:grid;grid-template-columns:minmax(180px,1.4fr) 90px minmax(160px,1fr) 70px 110px;gap:12px;align-items:center;padding:9px 16px;border-top:'+(i?'1px solid var(--line)':'0')+';min-width:660px')}));
     // posts
-    const posts=s.posts.map((p,j)=>({title:p.title,meta:p.meta,cap:p.cap,pending:!p.st,status:p.st?'Scheduled · Thu 10am':'Needs approval',pill:pill(p.st?'ok':'warn'),
+    const posts=s.posts.map((p,j)=>({title:p.title,meta:p.meta,cap:p.cap,hasImg:!!p.img,noImg:!p.img,img:p.img||'',view:()=>this.setState({pv:p}),pending:!p.st,status:p.st?'Scheduled · Thu 10am':'Needs approval',pill:pill(p.st?'ok':'warn'),
       approve:()=>{this.setState(x=>({posts:x.posts.map((q,n)=>n===j?{...q,st:1}:q)}));this.toast('Post scheduled for Thursday, 10am');}}));
     const tones=['Hype','Info','Short'].map(l=>({l,go:()=>this.setState({tone:l}),style:'height:30px;padding:0 11px;border-radius:8px;cursor:pointer;font-size:12.5px;font-weight:600;transition:all .15s;border:1px solid '+(s.tone===l?'var(--tx)':'var(--line)')+';background:'+(s.tone===l?'var(--tx)':'var(--card)')+';color:'+(s.tone===l?'var(--bg)':'var(--mu)')}));
     const caps={Hype:'Saturday. 6pm. Rec Center. Robo-Rumble scrimmage is ON. Free pizza, bring your bot and your rivals. #AggieRobotics',Info:'Robo-Rumble scrimmage: Sat Nov 15, 6–9pm at the Rec Center. Free pizza. Open to all members; bring a bot or come watch.',Short:'Robo-Rumble. Sat 6pm. Rec Center. Pizza on us.'};
@@ -823,8 +865,12 @@ class Component extends DCLogic {
       remind:()=>{ if(s.reminded) return; this.setState({reminded:true}); this.toast('Dues reminder texted to Sam and Eli'); },
       remindLabel:s.reminded?'Reminders sent':'Text dues reminder · 2',
       remindStyle:'height:34px;padding:0 14px;border-radius:9px;font-weight:600;font-size:13px;transition:all .2s;cursor:'+(s.reminded?'default':'pointer')+';border:1px solid '+(s.reminded?'var(--line)':'var(--tx)')+';background:'+(s.reminded?'var(--card)':'var(--tx)')+';color:'+(s.reminded?'var(--mu)':'var(--bg)'),
-      mktDraft:s.mkt,setMkt:e=>this.setState({mkt:e.target.value}),tones,writing:s.writing,genLabel:s.writing?'Writing…':'Write caption',
-      generate:()=>{ if(s.writing) return; this.setState({writing:true}); clearTimeout(this.tw); this.tw=setTimeout(()=>this.setState(x=>({writing:false,posts:[{title:'Robo\nRumble',meta:'SAT · 6PM · REC',cap:caps[x.tone],st:0},...x.posts]})),1100); },
+      mktDraft:s.mkt,setMkt:e=>this.setState({mkt:e.target.value}),tones,writing:s.writing,genLabel:s.writing?'Creating…':'Create post',
+      generate:()=>this.createPost(),
+      useArt:s.useArt,toggleArt:()=>this.setState({useArt:!s.useArt}),artChip:'height:30px;padding:0 11px;border-radius:10px;cursor:pointer;font-size:12.5px;font-weight:600;transition:all .15s;border:1px solid '+(s.useArt?'var(--ac)':'var(--line)')+';background:'+(s.useArt?'var(--acS)':'var(--card)')+';color:'+(s.useArt?'var(--acT)':'var(--mu)'),
+      hasPhoto:!!s.photo,noPhoto:!s.photo,pickPhoto:e=>this.pickPhoto(e),clearPhoto:()=>this.setState({photo:null}),
+      flags:s.flags,hasFlags:s.flags.length>0,
+      hasPv:!!s.pv,pvSrc:s.pv?s.pv.full:'',pvCap:s.pv?s.pv.cap:'',downloadPost:()=>this.downloadPost(),copyCap:()=>{ try{ navigator.clipboard.writeText(s.pv.cap); this.toast('Caption copied'); }catch(e){ this.toast('Copy failed'); } },
       posts,queueLabel:pendingPosts+' NEED APPROVAL',
       isTreas:s.role==='Treasurer',notTreas:s.role!=='Treasurer',roleSel,
       nudge:()=>{ if(s.nudged) return; this.setState({nudged:true}); this.toast('Interview invite sent to Priya'); },nudgeLabel:s.nudged?'Invite sent':'Send Priya an interview invite',

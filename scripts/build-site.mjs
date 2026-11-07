@@ -27,5 +27,6 @@ if (import.meta.url === new URL(process.argv[1], 'file://').href || process.argv
   mkdirSync(dist, { recursive: true });
   writeFileSync(new URL('index.html', dist), renderIndex(readFileSync(new URL('Relay.dc.html', root), 'utf8')));
   copyFileSync(new URL('support.js', root), new URL('support.js', dist));
-  console.log('Built dist/index.html and dist/support.js');
+  copyFileSync(new URL('poster.js', root), new URL('poster.js', dist));
+  console.log('Built dist/index.html, support.js and poster.js');
 }
