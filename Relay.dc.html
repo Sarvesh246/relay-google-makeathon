@@ -996,7 +996,7 @@ class Component extends DCLogic {
     let res=null, why='the AI service could not be reached';
     try{
       const r=await fetch('/api/post',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({prompt,tone:s.tone,art:s.useArt,docs:s.docs})});
-      if(r.ok) res=await r.json(); else why=r.status===503?'GEMINI_API_KEY is not set on this deployment':'the AI service returned an error ('+r.status+')';
+      if(r.ok) res=await r.json(); else why=r.status===503?'the AI service is unavailable':'the AI service returned an error ('+r.status+')';
     }catch(e){}
     // No key or API down: still produce a legit post from only what was typed, using the same template.
     if(!res||!res.spec) res={spec:window.RelayPoster.fallbackSpec(prompt,s.tone),flags:['Offline mode: '+why+', so this post uses only what you typed and no AI artwork.'],art:null};

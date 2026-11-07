@@ -70,5 +70,4 @@ server.on('error', (error) => {
 });
 server.listen(port, '127.0.0.1', () => {
   console.log(`Relay is ready at http://localhost:${port}`);
-  if (!process.env.GEMINI_API_KEY) console.log('GEMINI_API_KEY is not set: the Playbook will use its built-in sample answers.');
 });
