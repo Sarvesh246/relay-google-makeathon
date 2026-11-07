@@ -187,7 +187,9 @@
     var time = (TIME.exec(p) || [''])[0].replace(/\s/g, '').toUpperCase();
     var place = (PLACE.exec(p) || ['', ''])[1].toUpperCase();
     var cta = (CTA.exec(p) || [''])[0].toUpperCase();
-    var lead = p.split(/[,.;!]/)[0].split(/\s+/).slice(0, 4).join(' ').toUpperCase();
+    // Headline = the opening phrase with the date, time and place taken out (they get their own lines).
+    var bare = p.replace(DATE, ' ').replace(TIME, ' ').replace(/\s+/g, ' ').trim();
+    var lead = bare.split(/[,.;!]/)[0].split(/\s+(?:at|in|on|from)\s/i)[0].trim().split(/\s+/).filter(Boolean).slice(0, 4).join(' ').toUpperCase();
     var first = (p.match(/[^.!?]+[.!?]?/) || [p])[0].trim();
     var caption = tone === 'Short' ? first : tone === 'Info' ? p : p;
     var motif = 'tracks'; MOTIF_KEYS.some(function (m) { if (m[0].test(p)) { motif = m[1]; return true; } });

@@ -688,13 +688,13 @@ class Component extends DCLogic {
     if(s.writing) return;
     if(!prompt){ this.toast('Describe the post first.'); return; }
     this.setState({writing:true,flags:[]});
-    let res=null;
+    let res=null, why='the AI service could not be reached';
     try{
       const r=await fetch('/api/post',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({prompt,tone:s.tone,art:s.useArt,docs:s.docs})});
-      if(r.ok) res=await r.json();
+      if(r.ok) res=await r.json(); else why=r.status===503?'GEMINI_API_KEY is not set on this deployment':'the AI service returned an error ('+r.status+')';
     }catch(e){}
     // No key or API down: still produce a legit post from only what was typed, using the same template.
-    if(!res||!res.spec) res={spec:window.RelayPoster.fallbackSpec(prompt,s.tone),flags:['Offline mode: the layout uses only what you typed. Add the API key for AI-written copy and artwork.'],art:null};
+    if(!res||!res.spec) res={spec:window.RelayPoster.fallbackSpec(prompt,s.tone),flags:['Offline mode: '+why+', so this post uses only what you typed and no AI artwork.'],art:null};
     try{
       const out=await window.RelayPoster.compose(res.spec,{artSrc:res.art&&res.art.dataUrl,photoSrc:s.photo});
       const post={title:res.spec.headline,meta:[res.spec.date,res.spec.place].filter(Boolean).join(' · ')||'NEW POST',cap:res.spec.caption+'\n'+res.spec.hashtags.join(' '),st:0,img:out.thumb,full:out.full,spec:res.spec};
