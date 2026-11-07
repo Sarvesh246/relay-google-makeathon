@@ -198,8 +198,8 @@
  color:var(--sbTx) !important;isolation:isolate;
 }
 .relay-sidebar .relay-brand {height:44px !important;margin-bottom:18px !important;padding:0 10px !important;gap:12px !important;flex-shrink:0}
-.relay-sidebar .relay-brand > div:first-child {background:linear-gradient(135deg,#a5dce8,#6d6ccc) !important;box-shadow:inset 0 1px 1px rgba(255,255,255,.7),0 5px 12px rgba(99,112,169,.2);border-radius:12px !important}
-.relay-sidebar .relay-brand > div:first-child span {background:#fff !important}
+.relay-sidebar .relay-brand > button:first-child {background:linear-gradient(135deg,#a5dce8,#6d6ccc) !important;box-shadow:inset 0 1px 1px rgba(255,255,255,.7),0 5px 12px rgba(99,112,169,.2);border-radius:12px !important}
+.relay-sidebar .relay-brand > button:first-child span {background:#fff !important}
 .relay-sidebar .relay-brand > div:last-child span {font-size:23px !important;letter-spacing:-.04em !important}
 .relay-sidebar .relay-org {border-radius:15px !important;padding:10px !important;background:rgba(255,255,255,.25) !important;border:1px solid rgba(255,255,255,.5) !important;flex-shrink:0}
 .relay-sidebar nav {margin-top:8px !important;gap:5px !important;padding:0 2px 16px;scrollbar-width:thin;scrollbar-color:rgba(100,110,150,.2) transparent}
@@ -278,7 +278,7 @@
 }
 @media(max-height:560px) {
  .relay-sidebar .relay-brand {height:30px !important;margin-bottom:4px !important}
- .relay-sidebar .relay-brand > div:first-child {width:28px !important;height:28px !important}
+ .relay-sidebar .relay-brand > button:first-child {width:28px !important;height:28px !important}
  .relay-sidebar .relay-org {padding-top:4px !important;padding-bottom:4px !important}
  .relay-sidebar nav > div {padding-top:6px !important;padding-bottom:3px !important;font-size:8px !important}
  .relay-sidebar nav button,.relay-sidebar[data-expanded="false"] nav button {height:28px !important;flex-basis:28px !important;font-size:12px !important}
@@ -286,7 +286,12 @@
  .relay-sidebar .relay-profile > div:first-child {width:28px !important;height:28px !important}
 }
 
-@media (prefers-reduced-motion:reduce) {.relay-sidebar,.relay-sidebar * {transition:none !important}}
+.relay-brand-toggle {transition:transform .2s ease,box-shadow .2s ease !important}
+.relay-brand-toggle:hover {transform:scale(1.06)}
+.relay-sidebar .relay-brand,.relay-sidebar .relay-org,.relay-sidebar .relay-profile,.relay-sidebar nav > div {transition:padding .32s cubic-bezier(.2,.8,.2,1),margin .32s cubic-bezier(.2,.8,.2,1) !important}
+.relay-sidebar nav button {transition:padding .32s cubic-bezier(.2,.8,.2,1),gap .32s cubic-bezier(.2,.8,.2,1),background .25s,box-shadow .25s,border-color .25s !important}
+::view-transition-old(root),::view-transition-new(root) {animation-duration:.28s;animation-timing-function:ease-in-out}
+@media (prefers-reduced-motion:reduce) {.relay-sidebar,.relay-sidebar * {transition:none !important} ::view-transition-old(root),::view-transition-new(root){animation-duration:0s}}
 </style><style>/* Dashboard-only presentation; sidebar surfaces keep their own styling. */
 .relay-app {background:#e8eaf1 !important}
 .relay-app[data-theme="dark"] {background:#171d2b !important}
@@ -471,7 +476,7 @@
 
 <aside class="relay-sidebar" data-expanded="{{ sideExpanded }}" data-theme="{{ sideTheme }}" style="{{ sideStyle }}">
 <div class="relay-brand" style="display:flex;align-items:center;gap:10px;height:40px;padding:0 4px;margin-bottom:10px">
-<div style="flex:none;width:34px;height:34px;border-radius:9px;background:var(--ac);display:flex;align-items:center;justify-content:center;gap:3px"><span style="width:5px;height:17px;border-radius:2px;background:var(--onAc);transform:skewX(-18deg) translateY(-2px)"></span><span style="width:5px;height:17px;border-radius:2px;background:var(--onAc);opacity:.5;transform:skewX(-18deg) translateY(2px)"></span></div>
+<button type="button" onClick="{{ toggleSide }}" title="{{ sideTitle }}" aria-label="{{ sideTitle }}" aria-expanded="{{ sideExpanded }}" class="relay-brand-toggle" style="flex:none;width:34px;height:34px;border:0;cursor:pointer;border-radius:9px;background:var(--ac);display:flex;align-items:center;justify-content:center;gap:3px"><span style="width:5px;height:17px;border-radius:2px;background:var(--onAc);transform:skewX(-18deg) translateY(-2px)"></span><span style="width:5px;height:17px;border-radius:2px;background:var(--onAc);opacity:.5;transform:skewX(-18deg) translateY(2px)"></span></button>
 <div style="{{ labelStyle }}"><span style="font:800 20px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em">relay</span></div>
 </div>
 <div class="relay-org" style="{{ orgStyle }}">
@@ -495,10 +500,7 @@
 <div style="flex:none;width:30px;height:30px;border-radius:50%;background:var(--acHi);color:var(--ink);display:grid;place-items:center;font:700 11.5px/1 'Instrument Sans',sans-serif">JE</div>
 <div style="{{ labelStyle }}"><div style="font-size:13px;font-weight:600;line-height:1.2">Jordan Ellis</div><div style="font-size:11.5px;color:var(--sbMu)">President</div></div>
 </div>
-<button onClick="{{ toggleSide }}" class="relay-collapse" title="{{ sideTitle }}" style="{{ collapseStyle }}" style-hover="background:var(--sbSel);color:var(--sbTx)">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="{{ chevStyle }}"><path d="M15 6l-6 6 6 6"></path></svg>
-<span style="{{ labelFlex }}">Collapse</span>
-</button>
+
 </aside>
 
 <div class="relay-dashboard-shell" data-theme="{{ sideTheme }}" style="flex:1;min-width:0;display:flex;flex-direction:column">
@@ -844,6 +846,7 @@
 <sc-if value="{{ driveOpen }}" hint-placeholder-val="{{ false }}">
 <section style="padding:16px 18px 18px;animation:rise .4s cubic-bezier(.2,.8,.2,1) both">
 <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap"><span style="font:700 15px/1 'Bricolage Grotesque',sans-serif">Google Drive</span><span style="font-size:12.5px;color:var(--mu)">Relay reads the one folder you choose, as you. It never edits or deletes anything.</span></div>
+<sc-if value="{{ driveDemo }}" hint-placeholder-val="{{ false }}"><div style="margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--sub);font-size:12.5px;color:var(--mu)"><strong style="color:var(--tx)">Demo connection · Aggie Robotics Drive</strong><br>Demo account · 14 sample documents synced<br>No Google account is connected. Paste a folder link below to connect a real account.</div></sc-if>
 <sc-if value="{{ driveNoCfg }}" hint-placeholder-val="{{ false }}"><div style="margin-top:12px;font-size:12.5px;line-height:1.45;padding:9px 11px;border-radius:9px;background:var(--warnS);color:var(--warn)">Drive is not set up on this deployment yet. An admin needs to add GOOGLE_CLIENT_ID in Vercel (README, Google Drive section).</div></sc-if>
 <sc-if value="{{ driveHasDomain }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;font:500 10.5px/1.5 'Geist Mono',monospace;letter-spacing:.04em;color:var(--mu)">ORGANIZATION ACCOUNTS ONLY: {{ driveDomain }}</div></sc-if>
 <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
@@ -1224,7 +1227,7 @@ class Component extends DCLogic {
     const dr=s.drive, connected=!!dr.folder&&dr.at>0;
     const mins=Math.max(0,Math.round((Date.now()-dr.at)/60000));
     const ago=mins<1?'just now':mins<60?mins+' min ago':mins<1440?Math.round(mins/60)+' h ago':Math.round(mins/1440)+' d ago';
-    const driveLine=connected?'Synced from '+dr.name+' · '+ago:'Not connected to Google Drive';
+    const driveLine=connected?'Synced from '+dr.name+' · '+ago:'Demo folder · Aggie Robotics Drive';
     const driveBtn=s.driveBusy?'Syncing…':connected?'Sync now':'Connect and sync';
     // import for handoff
     const impCats=[['rules','TAMU rules'],['lessons','What worked / didn’t'],['event','Event recap'],['contacts','Contacts'],['guide','General guide']].map(([id,l])=>({l,go:()=>this.setState({impC:id}),style:'height:30px;padding:0 11px;border-radius:10px;cursor:pointer;font-size:12.5px;font-weight:600;transition:all .15s;border:1px solid '+(s.impC===id?'var(--tx)':'var(--line)')+';background:'+(s.impC===id?'var(--tx)':'var(--card)')+';color:'+(s.impC===id?'var(--bg)':'var(--mu)')}));
@@ -1254,7 +1257,7 @@ class Component extends DCLogic {
       cmdStyle:'flex:0 1 300px;min-width:44px;display:flex;align-items:center;gap:9px;height:38px;padding:0 6px 0 12px;border-radius:10px;cursor:pointer;font-size:13.5px;transition:border-color .2s,background .2s,color .2s;border:1px solid '+(s.ai?'var(--ac)':'var(--line)')+';background:'+(s.ai?'var(--acS)':'var(--card)')+';color:'+(s.ai?'var(--acT)':'var(--mu)'),
       toggleAi:()=>this.setAi(!s.ai),closeAi:()=>this.setAi(false),
       themeIcon:d?'M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4':'M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z',
-      toggleTheme:()=>this.setState({dark:!d}),
+      toggleTheme:()=>{ const change=()=>this.setState(x=>({dark:!x.dark})); if(document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && ReactDOM.flushSync) document.startViewTransition(()=>ReactDOM.flushSync(change)); else change(); },
       drawerStyle:'position:absolute;top:10px;right:10px;bottom:10px;width:min(392px,calc(100% - 20px));z-index:10;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--drawerSh);transition:transform .42s '+E+',opacity .3s,visibility 0s linear '+(s.ai?'0s':'.42s')+';transform:translateX('+(s.ai?'0':'calc(100% + 24px)')+');opacity:'+(s.ai?1:0)+';visibility:'+(s.ai?'visible':'hidden')+';pointer-events:'+(s.ai?'auto':'none'),
       calendarDays,calendarMonthLabel:RelayCalendar.monthLabel(calendarMonth),calendarCountLabel:calendarMonthCount+' event'+(calendarMonthCount===1?'':'s')+' this month',calendarDayLabel:formatCalendarDay(calendarSelectedDay),calendarAgenda,calendarDayEmpty:calendarAgenda.length===0,
       calendarShowPlan:!!s.calendarShowPlan,calendarShowAgenda:!s.calendarShowPlan,
@@ -1287,7 +1290,7 @@ class Component extends DCLogic {
       exitStepLabel:done?'COMPLETE':'QUESTION '+(i+1)+' OF 4',exitSegs,exitQ:done?'Handoff filed.':qs[i][0],exitA:done?"It's in Docs now, and the incoming treasurer can read it or ask the Playbook about it.":qs[i][1],
       exitPrev:()=>this.setState({step:Math.max(0,i-1)}),exitNext:()=>{ if(i===3){ this.toast('Treasurer handoff filed to Docs'); this.addDoc({title:'Treasurer Handoff Interview (Maya Chen)',category:'handoff',event:'',year:'2026',author:'Maya Chen',text:qs.map(([qq,aa])=>'Q: '+qq+' A: '+aa).join(' ')}); } this.setState({step:done?0:i+1}); },exitNextLabel:done?'Start over':i===3?'Finish and file':'Next question',handoff,
       driveLine,driveOpen:s.driveOpen,toggleDrive:()=>this.setState({driveOpen:!s.driveOpen}),driveInput:s.driveInput,setDriveInput:e=>this.setState({driveInput:e.target.value}),
-      driveBtn,driveSync:()=>this.driveSync(),driveDisconnect:()=>this.driveDisconnect(),driveConnected:connected,
+      driveBtn,driveSync:()=>this.driveSync(),driveDisconnect:()=>this.driveDisconnect(),driveConnected:connected,driveDemo:!connected,
       driveNoCfg:!s.cfg.googleClientId,driveDomain:s.cfg.allowedDomain,driveHasDomain:!!s.cfg.allowedDomain,
       driveStatus:connected?'Connected as '+dr.email+' · '+dr.n+' doc'+(dr.n===1?'':'s')+' synced':'',
       driveHasMsg:!!s.driveMsg,driveMsg:s.driveMsg,
