@@ -133,13 +133,13 @@
 .relay-dashboard-shell > header > button:first-of-type {border-radius:28px !important;height:42px !important;padding-left:18px !important;background:linear-gradient(145deg,#e0e4ee,#edf0f7) !important;box-shadow:inset 4px 4px 8px rgba(117,130,164,.16),inset -3px -3px 6px rgba(255,255,255,.8)}
 .relay-dashboard-shell > header kbd {border:0 !important;background:rgba(255,255,255,.5) !important;border-radius:6px !important;color:var(--dash-muted) !important}
 .relay-dashboard-shell > main {padding:6px 26px 28px !important}
-.relay-overview {
+.relay-overview,.relay-screen,.relay-drawer {
  --tx:var(--dash-text);--mu:var(--dash-muted);--card:#edf0f6;--sub:#e1e5f0;--line:#dce0eb;
  --ac:#8293e7;--acHi:#8a7ce0;--onAc:#fff;--acT:#7162b3;--acS:#e6e2f5;
  --readyEmpty:#cbd0df;--ok:#509b89;--okS:#e2efea;--warn:#897343;--warnS:#f1eadc;
  gap:20px !important;color:var(--tx);
 }
-.relay-overview section,.relay-metrics > button {border:1px solid var(--dash-edge) !important;border-radius:23px !important;background:var(--dash-surface) !important;box-shadow:var(--dash-shadow) !important}
+.relay-overview section,.relay-screen section:not(.relay-lanes),.relay-metrics > button {border:1px solid var(--dash-edge) !important;border-radius:23px !important;background:var(--dash-surface) !important;box-shadow:var(--dash-shadow) !important}
 .relay-metrics {gap:18px !important;border:0 !important;border-radius:0 !important;background:transparent !important;overflow:visible !important;grid-template-columns:repeat(4,minmax(0,1fr)) !important;order:0}
 .relay-metrics > button {padding:20px 19px !important;min-height:112px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s !important;color:var(--tx) !important}
 .relay-metrics > button:hover {transform:translateY(-3px);box-shadow:9px 15px 24px rgba(114,125,158,.23),-5px -5px 16px rgba(255,255,255,.8) !important}
@@ -180,7 +180,7 @@
 .relay-board > div:not(:first-child) > div > div:first-child {background:linear-gradient(90deg,#85b6ed,#9f7be5) !important}
 .relay-overview button:focus-visible,.relay-dashboard-shell > header button:focus-visible {outline:2px solid #8a7cce;outline-offset:3px}
 .relay-dashboard-shell[data-theme="dark"] {--dash-text:#e1e5fa;--dash-muted:#a0abc8;--dash-edge:rgba(179,194,237,.12);--dash-surface:linear-gradient(135deg,#282f43,#23293b);--dash-shadow:7px 10px 20px rgba(0,0,0,.26),-4px -4px 14px rgba(93,108,148,.08),inset 0 1px 1px rgba(186,203,255,.08);background:linear-gradient(140deg,#232a3d,#1d2332);box-shadow:inset 0 1px 1px rgba(186,203,255,.1)}
-.relay-dashboard-shell[data-theme="dark"] .relay-overview {--readyEmpty:#48526e;--sub:#1b2234;--line:#363f58;--card:#262e42;--acS:#393656;--ok:#7ec9b3;--warn:#d1b584}
+.relay-dashboard-shell[data-theme="dark"] .relay-overview,.relay-dashboard-shell[data-theme="dark"] .relay-screen,.relay-drawer[data-theme="dark"] {--readyEmpty:#48526e;--sub:#1b2234;--line:#363f58;--card:#262e42;--acS:#393656;--ok:#7ec9b3;--warn:#d1b584}
 .relay-dashboard-shell[data-theme="dark"] > header > button {background:var(--dash-surface) !important;border-color:var(--dash-edge) !important;box-shadow:5px 5px 10px rgba(0,0,0,.2),-3px -3px 8px rgba(93,108,148,.1)}
 .relay-dashboard-shell[data-theme="dark"] > header > button:first-of-type {background:#202739 !important;box-shadow:inset 3px 3px 7px rgba(0,0,0,.2),inset -2px -2px 6px rgba(93,108,148,.1)}
 .relay-dashboard-shell[data-theme="dark"] .relay-countdown {background:linear-gradient(145deg,#303a55,#252d42);border-color:var(--dash-edge);box-shadow:6px 8px 16px rgba(0,0,0,.25),-4px -4px 12px rgba(93,108,148,.09),inset 0 0 0 9px rgba(166,184,246,.03)}
@@ -190,6 +190,36 @@
 @media(max-width:1150px) {.relay-metrics {grid-template-columns:repeat(2,minmax(0,1fr)) !important}.relay-hero-copy {flex-basis:280px !important}.relay-countdown {width:120px;height:120px}}
 @media(max-width:760px) {.relay-dashboard-shell {margin:10px 8px;border-radius:22px}.relay-dashboard-shell > header {padding:0 16px !important;height:76px !important;gap:10px !important}.relay-dashboard-shell > header > div > div:last-child {font-size:21px !important}.relay-dashboard-shell > header > button:first-of-type {flex:0 0 42px !important;padding:0 !important;justify-content:center;min-width:42px !important}.relay-dashboard-shell > header > button:first-of-type > span,.relay-dashboard-shell > header > button:first-of-type > kbd {display:none}.relay-dashboard-shell > main {padding:4px 16px 22px !important}.relay-metrics {gap:12px !important}.relay-metrics > button {padding:16px 12px !important}.relay-metrics > button > div:nth-child(2) {flex-wrap:wrap;gap:5px !important}.relay-metrics > button > div:nth-child(2) > span:first-child {font-size:25px !important}.relay-hero {padding:22px !important}.relay-hero-copy > div:nth-child(2) {font-size:29px !important}.relay-countdown {width:104px;height:104px}.relay-countdown > div:first-child {font-size:58px !important}.relay-overview {gap:16px !important}}
 @media(prefers-reduced-motion:reduce) {.relay-overview * {transition:none !important;animation:none !important}}
+/* Inner screens + Playbook share the dashboard's glass surface language. */
+.relay-app {overflow:clip !important}
+.relay-screen,.relay-drawer {--ink:#303756;--inkTx:#f2f4ff;--inkMu:#a9b2d6;--inkLine:rgba(255,255,255,.06);--bg:#f4f6fb;--sh:none;--laneSel:rgba(130,147,231,.14);--laneLine:rgba(120,130,170,.16);color:var(--tx)}
+.relay-screen {gap:20px !important}
+.relay-screen section:not(.relay-lanes) {overflow:hidden}
+.relay-screen section:not(.relay-lanes) > div[style*="border-bottom"] {border-bottom-color:rgba(120,130,170,.16) !important}
+.relay-screen .relay-stats {gap:18px !important;background:transparent !important;border:0 !important;border-radius:0 !important;overflow:visible !important}
+.relay-screen .relay-stats > div {border:1px solid var(--dash-edge) !important;border-radius:23px !important;background:var(--dash-surface) !important;box-shadow:var(--dash-shadow) !important;padding:20px 19px !important;min-height:112px}
+.relay-screen .relay-stats-in {gap:12px !important;background:transparent !important;border:0 !important;border-radius:0 !important;overflow:visible !important}
+.relay-screen .relay-stats-in > div {border-radius:16px;background:var(--sub) !important;box-shadow:inset 2px 2px 5px rgba(114,125,158,.14),inset -2px -2px 5px rgba(255,255,255,.7);padding:12px 16px !important}
+.relay-screen .relay-lanes {border:1px solid var(--dash-edge) !important;border-radius:23px !important;background:var(--dash-surface) !important;box-shadow:var(--dash-shadow) !important;color:var(--tx) !important;--inkTx:var(--tx);--inkMu:var(--mu);padding:18px 22px 12px !important}
+.relay-screen .relay-lanes button > span:nth-child(3) {background:rgba(255,255,255,.45) !important;border-color:rgba(255,255,255,.8) !important;box-shadow:inset 2px 2px 4px rgba(114,125,158,.14),inset -2px -2px 4px rgba(255,255,255,.7)}
+.relay-screen .relay-lanes button > span:nth-child(3) > span:nth-child(2) {border-top-color:rgba(120,130,170,.35) !important}
+.relay-screen button:focus-visible,.relay-drawer button:focus-visible {outline:2px solid #8a7cce;outline-offset:2px}
+.relay-drawer {border:1px solid var(--dash-edge) !important;border-radius:26px !important;background:radial-gradient(ellipse at 95% 0,rgba(182,181,241,.42),transparent 45%),radial-gradient(ellipse at 0 100%,rgba(161,231,250,.38),transparent 45%),linear-gradient(145deg,#f7f8fb,#eceef5) !important;box-shadow:8px 14px 34px rgba(88,98,135,.2),inset 1px 1px 2px #fff !important;--dash-text:#181d42;--dash-muted:#797e94;--dash-edge:rgba(255,255,255,.85);--dash-surface:linear-gradient(135deg,rgba(255,255,255,.7),rgba(234,237,246,.58));--dash-shadow:6px 8px 16px rgba(114,125,158,.16),-4px -4px 12px rgba(255,255,255,.7),inset 0 1px 1px rgba(255,255,255,.9)}
+.relay-drawer[data-theme="dark"] {background:radial-gradient(ellipse at 95% 0,rgba(130,120,220,.22),transparent 45%),linear-gradient(145deg,#2a3147,#1f2536) !important;box-shadow:8px 14px 34px rgba(0,0,0,.45),inset 0 1px 1px rgba(186,203,255,.1) !important;--dash-text:#e1e5fa;--dash-muted:#a0abc8;--dash-edge:rgba(179,194,237,.14);--dash-surface:linear-gradient(135deg,#2c3449,#252c40);--dash-shadow:5px 7px 14px rgba(0,0,0,.25),-3px -3px 10px rgba(93,108,148,.08)}
+.relay-drawer > div:first-child {border-bottom-color:rgba(120,130,170,.18) !important}
+.relay-drawer > div:first-child > div:first-child {background:linear-gradient(135deg,#a5dce8,#6d6ccc) !important;color:#fff !important;border-radius:11px !important;box-shadow:inset 0 1px 1px rgba(255,255,255,.7),0 5px 12px rgba(99,112,169,.2)}
+.relay-drawer > div:first-child > button {border-radius:50% !important;background:var(--dash-surface) !important;box-shadow:3px 4px 8px rgba(117,130,164,.18),-2px -2px 6px rgba(255,255,255,.7)}
+.relay-drawer > div:nth-child(3) {border-top-color:rgba(120,130,170,.18) !important}
+.relay-drawer form {border-radius:22px !important;background:linear-gradient(145deg,#e0e4ee,#edf0f7) !important;border-color:rgba(255,255,255,.7) !important;box-shadow:inset 3px 3px 7px rgba(117,130,164,.16),inset -3px -3px 6px rgba(255,255,255,.8)}
+.relay-drawer[data-theme="dark"] form {background:#202739 !important;border-color:var(--dash-edge) !important;box-shadow:inset 3px 3px 7px rgba(0,0,0,.25),inset -2px -2px 6px rgba(93,108,148,.1)}
+.relay-drawer form button {border-radius:50% !important;background:linear-gradient(120deg,#8b9ce8,#9c84dd) !important;color:#fff !important;box-shadow:0 5px 10px rgba(121,113,198,.3)}
+.relay-dashboard-shell[data-theme="dark"] .relay-screen section:not(.relay-lanes) > div[style*="border-bottom"] {border-bottom-color:rgba(179,194,237,.14) !important}
+.relay-dashboard-shell[data-theme="dark"] .relay-screen .relay-stats-in > div {box-shadow:inset 2px 2px 5px rgba(0,0,0,.22),inset -2px -2px 5px rgba(93,108,148,.08)}
+.relay-dashboard-shell[data-theme="dark"] .relay-screen,.relay-drawer[data-theme="dark"] {--bg:#151a28;--ink:#1b2234;--inkTx:#e1e5fa}
+.relay-dashboard-shell[data-theme="dark"] .relay-screen .relay-lanes {--laneLine:rgba(179,194,237,.12);--laneSel:rgba(138,124,224,.18)}
+.relay-dashboard-shell[data-theme="dark"] .relay-screen .relay-lanes button > span:nth-child(3) {background:rgba(0,0,0,.18) !important;border-color:rgba(179,194,237,.14) !important;box-shadow:none}
+@media(max-width:1150px) {.relay-screen .relay-stats {grid-template-columns:repeat(2,minmax(0,1fr)) !important}}
+@media(prefers-reduced-motion:reduce) {.relay-screen *,.relay-drawer * {transition:none !important;animation:none !important}}
 </style></helmet>
 <div style="{{ themeVars }}">
 <div class="relay-app" data-theme="{{ sideTheme }}" style="height:100vh;display:flex;background:var(--bg);color:var(--tx);font:14px/1.45 'Instrument Sans',system-ui,sans-serif;overflow:hidden;position:relative;transition:background .3s,color .3s">
@@ -316,7 +346,7 @@
 </sc-if>
 
 <sc-if value="{{ isEvt }}" hint-placeholder-val="{{ false }}">
-<div data-screen-label="Events" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
+<div class="relay-screen" data-screen-label="Events" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
 <section style="flex:0 1 360px;min-width:min(100%,300px);background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);overflow:hidden">
 <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)"><span style="font:700 15px/1 'Bricolage Grotesque',sans-serif">All events</span><span style="font:500 11.5px/1 'Geist Mono',monospace;color:var(--mu)">1 UPCOMING · 4 PAST</span></div>
 <sc-for list="{{ events }}" as="e" hint-placeholder-count="5"><button onClick="{{ e.pick }}" style="{{ e.row }}" style-hover="background:var(--sub)">
@@ -331,7 +361,7 @@
 <div style="flex:1;min-width:0"><div style="font:500 11px/1 'Geist Mono',monospace;letter-spacing:.08em;color:var(--acT)">{{ ev.eyebrow }}</div><div style="font:800 30px/1.05 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em;margin-top:6px">{{ ev.n }}</div></div>
 <button onClick="{{ ev.ask }}" style="flex:none;display:flex;align-items:center;gap:7px;height:34px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:13px;font-weight:600;transition:border-color .15s" style-hover="border-color:var(--ac)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 5v16M8 7h7"></path></svg>{{ ev.askLabel }}</button>
 </div>
-<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:14px 0">
+<div class="relay-stats-in" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:14px 0">
 <sc-for list="{{ ev.stats }}" as="st" hint-placeholder-count="3"><div style="background:var(--sub);padding:10px 14px"><div style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.08em;color:var(--mu)">{{ st.l }}</div><div style="font:700 20px/1 'Bricolage Grotesque',sans-serif;margin-top:7px">{{ st.v }}</div></div></sc-for>
 </div>
 
@@ -365,8 +395,8 @@
 </sc-if>
 
 <sc-if value="{{ isFin }}" hint-placeholder-val="{{ false }}">
-<div data-screen-label="Money" style="display:flex;flex-direction:column;gap:12px;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:0;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden">
+<div class="relay-screen" data-screen-label="Money" style="display:flex;flex-direction:column;gap:12px;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
+<div class="relay-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:0;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden">
 <sc-for list="{{ finK }}" as="k" hint-placeholder-count="4"><div style="background:var(--card);box-shadow:1px 1px 0 var(--line);padding:12px 16px"><div style="font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.08em;color:var(--mu)">{{ k.l }}</div><div style="font:700 26px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.025em;margin-top:8px">{{ k.v }}</div><div style="font-size:12.5px;color:var(--mu);margin-top:5px">{{ k.s }}</div></div></sc-for>
 </div>
 <div style="display:flex;flex-wrap:wrap;gap:12px">
@@ -393,7 +423,7 @@
 </sc-if>
 
 <sc-if value="{{ isMem }}" hint-placeholder-val="{{ false }}">
-<div data-screen-label="People" style="display:flex;flex-direction:column;gap:12px;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
+<div class="relay-screen" data-screen-label="People" style="display:flex;flex-direction:column;gap:12px;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
 <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
 <div style="position:relative;display:flex;padding:3px;border-radius:10px;background:var(--sub);border:1px solid var(--line)">
 <div style="{{ segInd }}"></div>
@@ -417,7 +447,7 @@
 </sc-if>
 
 <sc-if value="{{ isMkt }}" hint-placeholder-val="{{ false }}">
-<div data-screen-label="Posts" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
+<div class="relay-screen" data-screen-label="Posts" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
 <section style="flex:1 1 320px;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);padding:14px 16px 16px">
 <div style="font:700 15px/1 'Bricolage Grotesque',sans-serif">New post</div>
 <div style="font-size:12.5px;color:var(--mu);margin-top:4px">Write the facts. Relay turns it into a caption that sounds like your past posts.</div>
@@ -448,8 +478,8 @@
 </sc-if>
 
 <sc-if value="{{ isHand }}" hint-placeholder-val="{{ false }}">
-<div data-screen-label="Handoff" style="display:flex;flex-direction:column;gap:12px;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
-<section style="position:relative;overflow:hidden;background:var(--ink);color:var(--inkTx);border-radius:14px;padding:14px 16px 8px">
+<div class="relay-screen" data-screen-label="Handoff" style="display:flex;flex-direction:column;gap:12px;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
+<section class="relay-lanes" style="position:relative;overflow:hidden;background:var(--ink);color:var(--inkTx);border-radius:14px;padding:14px 16px 8px">
 <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px"><span style="font:800 20px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em">Relay board</span><span style="font:500 11px/1 'Geist Mono',monospace;letter-spacing:.08em;color:var(--inkMu)">TERMS END APR 28 · 24 WEEKS</span></div>
 <sc-for list="{{ lanes }}" as="r" hint-placeholder-count="4"><button onClick="{{ r.pick }}" style="{{ r.laneRow }}" style-hover="background:rgba(255,255,255,.05)">
 <span style="font:800 22px/1 'Bricolage Grotesque',sans-serif;color:var(--inkMu)">{{ r.no }}</span>
@@ -497,12 +527,31 @@
 </sc-if>
 
 <sc-if value="{{ isArc }}" hint-placeholder-val="{{ false }}">
-<div data-screen-label="Docs" style="display:flex;flex-direction:column;gap:12px;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
+<div class="relay-screen" data-screen-label="Docs" style="display:flex;flex-direction:column;gap:12px;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
 <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
 <div style="flex:0 1 340px;display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--card)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--mu);flex:none"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg><input value="{{ q }}" onChange="{{ setQ }}" placeholder="Filter documents" style="flex:1;min-width:0;border:0;outline:0;background:transparent;font-size:14px"></div>
 <span style="flex:1"></span>
+<button onClick="{{ toggleImp }}" style="flex:none;height:38px;padding:0 16px;border-radius:12px;border:0;cursor:pointer;font-weight:600;font-size:13.5px;background:var(--ac);color:var(--onAc);transition:transform .15s" style-active="transform:scale(.97)">Import for handoff</button>
 <span style="font-size:12.5px;color:var(--mu)">Synced from the officers' Drive · 2 hours ago</span>
 </div>
+<sc-if value="{{ impOpen }}" hint-placeholder-val="{{ false }}">
+<section style="padding:16px 18px 18px;animation:rise .4s cubic-bezier(.2,.8,.2,1) both">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap"><span style="font:700 15px/1 'Bricolage Grotesque',sans-serif">Import for handoff</span><span style="font-size:12.5px;color:var(--mu)">Everything saved here becomes part of what the Playbook knows and can cite.</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 10px"><sc-for list="{{ impCats }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.l }}</button></sc-for></div>
+<div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1.2fr) 90px;gap:10px;margin-bottom:10px">
+<input value="{{ impT }}" onChange="{{ setImpT }}" placeholder="Title, e.g. Robo-Rumble 2026 recap" style="{{ impField }}">
+<input value="{{ impE }}" onChange="{{ setImpE }}" placeholder="Event (optional)" style="{{ impField }}">
+<input value="{{ impY }}" onChange="{{ setImpY }}" placeholder="Year" style="{{ impField }}">
+</div>
+<textarea value="{{ impX }}" onChange="{{ setImpX }}" rows="6" placeholder="Paste the rules, or what worked and what didn't: numbers, vendors, dates, mistakes to avoid." style="width:100%;padding:10px 12px;border:1px solid var(--line);outline:0;border-radius:10px;background:var(--sub);color:var(--tx);font-size:14px;line-height:1.5;resize:vertical"></textarea>
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px">
+<input type="file" accept=".txt,.md,text/plain" onChange="{{ impFile }}" style="font-size:12.5px;color:var(--mu);max-width:260px">
+<span style="flex:1"></span>
+<button onClick="{{ toggleImp }}" style="height:36px;padding:0 14px;border-radius:9px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-weight:600;font-size:13.5px">Cancel</button>
+<button onClick="{{ saveImp }}" style="{{ impSaveStyle }}">Save to memory</button>
+</div>
+</section>
+</sc-if>
 <section style="background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);overflow-x:auto">
 <div style="display:grid;grid-template-columns:minmax(200px,1.6fr) 110px 120px 70px 90px;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);font:500 10.5px/1 'Geist Mono',monospace;letter-spacing:.08em;color:var(--mu);min-width:640px"><span>DOCUMENT</span><span>TYPE</span><span>WRITTEN BY</span><span>YEAR</span><span>USED</span></div>
 <sc-for list="{{ docs }}" as="x" hint-placeholder-count="10"><div style="{{ x.row }}">
@@ -520,14 +569,15 @@
 </div></main>
 </div>
 
-<aside data-screen-label="Playbook" style="{{ drawerStyle }}">
+<aside class="relay-drawer" data-theme="{{ sideTheme }}" data-screen-label="Playbook" style="{{ drawerStyle }}">
 <div style="flex:none;display:flex;align-items:center;gap:10px;padding:12px 12px 12px 16px;border-bottom:1px solid var(--line)">
 <div style="flex:none;width:30px;height:30px;border-radius:8px;background:var(--ink);color:var(--acHi);display:grid;place-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 5v16M8 7h7"></path></svg></div>
-<div style="flex:1;min-width:0;line-height:1.25"><div style="font:700 15px/1.2 'Bricolage Grotesque',sans-serif">Playbook</div><div style="font-size:12px;color:var(--mu)">Answers from 18 club docs, with sources</div></div>
+<div style="flex:1;min-width:0;line-height:1.25"><div style="font:700 15px/1.2 'Bricolage Grotesque',sans-serif">Playbook</div><div style="font-size:12px;color:var(--mu)">Answers from {{ docCount }} club docs, with sources</div></div>
 <button onClick="{{ closeAi }}" title="Close (Esc)" style="flex:none;width:32px;height:32px;display:grid;place-items:center;border:0;background:transparent;color:var(--mu);cursor:pointer;border-radius:8px;transition:background .15s" style-hover="background:var(--sub)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
 </div>
 <div ref="{{ msgRef }}" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth">
 <sc-for list="{{ msgs }}" as="m" hint-placeholder-count="1"><div style="{{ m.wrap }}">
+<sc-if value="{{ m.hasTag }}" hint-placeholder-val="{{ false }}"><span style="{{ m.tagStyle }};margin-bottom:6px">{{ m.tag }}</span></sc-if>
 <div style="{{ m.bubble }}">{{ m.text }}</div>
 <sc-if value="{{ m.hasSrc }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;animation:rise .35s cubic-bezier(.2,.8,.2,1) both"><sc-for list="{{ m.sources }}" as="sr" hint-placeholder-count="2"><button onClick="{{ sr.go }}" style="display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 8px;border-radius:6px;border:1px solid var(--line);background:var(--sub);color:var(--acT);cursor:pointer;font-size:12px;font-weight:600;transition:border-color .15s" style-hover="border-color:var(--ac)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"></path></svg>{{ sr.n }}</button></sc-for></div></sc-if>
 </div></sc-for>
@@ -549,7 +599,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Vermilion&quot;,&quot;Cobalt&quot;,&quot;Maroon&quot;],&quot;default&quot;:&quot;Vermilion&quot;,&quot;tsType&quot;:&quot;'Vermilion'|'Cobalt'|'Maroon'&quot;,&quot;section&quot;:&quot;Brand&quot;},&quot;sidebar&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Ink&quot;,&quot;Paper&quot;],&quot;default&quot;:&quot;Ink&quot;,&quot;tsType&quot;:&quot;'Ink'|'Paper'&quot;,&quot;section&quot;:&quot;Brand&quot;},&quot;startTab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;evt&quot;,&quot;fin&quot;,&quot;mem&quot;,&quot;mkt&quot;,&quot;hand&quot;,&quot;arc&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Prototype&quot;}}">
 class Component extends DCLogic {
-  state = { tab:null, dark:false, side:true, ai:false, draft:'', typing:false, toast:null, evt:0, est:false, memF:'all', step:2, q:'', role:'Treasurer', reminded:false, nudged:false, writing:false, tone:'Hype',
+  state = { docs:[], impOpen:false, impT:'', impC:'lessons', impE:'', impY:'2026', impX:'', fu:[], tab:null, dark:false, side:true, ai:false, draft:'', typing:false, toast:null, evt:0, est:false, memF:'all', step:2, q:'', role:'Treasurer', reminded:false, nudged:false, writing:false, tone:'Hype',
     check:{room:false,cater:false,judges:true,brackets:true,budget:true}, tasks:{},
     mkt:'Robo-Rumble scrimmage, Sat Nov 15, 6pm at the Rec Center. Free pizza. Bring your bot.',
     msgs:[{r:'a',text:'Ask how something was done before. Every answer links to the doc it came from.',src:[]}],
@@ -569,6 +619,7 @@ class Component extends DCLogic {
     fb:["Nothing in the club's docs covers that yet. Try a past event, a vendor, a budget, or a process.",[]]
   };
   componentDidMount(){
+    try{ const raw=localStorage.getItem('relay.importedDocs'); const d=raw&&JSON.parse(raw); if(Array.isArray(d)) this.setState({docs:d}); }catch(e){}
     this.rs=()=>{const sh=window.innerHeight<640; if(sh!==this.short){this.short=sh;this.forceUpdate();}}; this.rs(); window.addEventListener('resize',this.rs);
     this.kd=e=>{ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();this.setAi(!this.state.ai);} if(e.key==='Escape'&&this.state.ai)this.setAi(false); };
     window.addEventListener('keydown',this.kd);
@@ -579,12 +630,30 @@ class Component extends DCLogic {
   toast(text){ clearTimeout(this.tt); this.setState({toast:null},()=>requestAnimationFrame(()=>this.setState({toast:text}))); this.tt=setTimeout(()=>this.setState({toast:null}),2600); }
   ask(q,k){
     clearTimeout(this.t1); clearInterval(this.iv);
-    this.setState(s=>({ai:true,draft:'',typing:true,msgs:[...s.msgs,{r:'u',text:q,src:[]}]}));
-    this.t1=setTimeout(()=>{
-      const a=this.qa[k], total=a[0].split(' ').length;
-      this.setState(s=>({typing:false,msgs:[...s.msgs,{r:'a',text:a[0],src:a[1],n:0,total}]}));
-      this.iv=setInterval(()=>this.setState(s=>{const m=s.msgs.slice(),L=m[m.length-1];if(!L||L.n===undefined||L.n>=L.total){clearInterval(this.iv);return null;}m[m.length-1]={...L,n:Math.min(L.total,L.n+2)};return {msgs:m};}),28);
-    },700);
+    const id=(this.askId=(this.askId||0)+1);
+    const hist=this.state.msgs.filter(m=>m.text).slice(-6).map(m=>({r:m.r,text:m.text}));
+    const screen=({home:'Overview',evt:'Events',fin:'Money',mem:'People',mkt:'Posts',hand:'Handoff',arc:'Docs'})[this.state.tab||this.props.startTab||'home'];
+    this.setState(s=>({ai:true,draft:'',typing:true,fu:[],msgs:[...s.msgs,{r:'u',text:q,src:[]}]}));
+    // Offline/unconfigured fallback: the original canned answers, so the prototype still demos without a key.
+    const offline=()=>{ const a=this.qa[k||this.classify(q.toLowerCase())]; return {answer:a[0],sources:a[1],precedent:null,followups:[]}; };
+    const call=fetch('/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({question:q,history:hist,screen,docs:this.state.docs})})
+      .then(r=>r.ok?r.json():Promise.reject(new Error(String(r.status))))
+      .then(a=>a&&a.answer?a:offline(),()=>offline());
+    // Hold the typing dots for at least 700ms so a fast answer doesn't pop in abruptly.
+    Promise.all([call,new Promise(r=>{this.t1=setTimeout(r,700);})]).then(([a])=>{ if(id===this.askId) this.reply(a); });
+  }
+  reply(a){
+    const text=a.answer, total=text.split(' ').length;
+    const tag={FOUND:'Done before',ANALOGOUS:'No direct precedent · closest matches',NONE:'Not in the club docs'}[a.precedent]||'';
+    this.setState(s=>({typing:false,fu:a.followups||[],msgs:[...s.msgs,{r:'a',text,src:a.sources||[],n:0,total,tag,prec:a.precedent||''}]}));
+    this.iv=setInterval(()=>this.setState(s=>{const m=s.msgs.slice(),L=m[m.length-1];if(!L||L.n===undefined||L.n>=L.total){clearInterval(this.iv);return null;}m[m.length-1]={...L,n:Math.min(L.total,L.n+2)};return {msgs:m};}),28);
+  }
+  addDoc(d){
+    this.setState(s=>{
+      const docs=[...s.docs.filter(x=>x.title.toLowerCase()!==d.title.toLowerCase()),d].slice(-30);
+      try{ localStorage.setItem('relay.importedDocs',JSON.stringify(docs)); }catch(e){}
+      return {docs};
+    });
   }
   classify(l){ const m=[[/rumble|scrim|last year/,'rumble'],[/kickoff/,'kick'],[/workshop|solder/,'work'],[/gala|fund|sponsor/,'gala'],[/cater|food|vendor|pizza/,'cater'],[/room|book/,'room'],[/spend|expens|cost|budget/,'spend'],[/elig|run for|officer/,'elig'],[/post|instagram|caption/,'posts'],[/treasurer|undone|loose/,'treas']]; const h=m.find(([r])=>r.test(l)); return h?h[1]:'fb'; }
   renderVals(){
@@ -625,9 +694,9 @@ class Component extends DCLogic {
     const lanes=roleData.map(([no,role,who,pct,st,tone,blurb,canNudge])=>{const sel=s.role===role, fin=pct>=100;return {no,role,who,pct,st,blurb,canNudge,pctLabel:pct+'%',
       bar:bar(pct,fin?'var(--ok)':'var(--ac)'),
       baton:'position:absolute;top:50%;left:'+pct+'%;width:12px;height:8px;margin:-4px 0 0 -6px;border-radius:2px;background:var(--tx);transform:skewX(-18deg);animation:batonIn .9s '+E+' both;transition:left .5s '+E,
-      bigBaton:'position:absolute;top:50%;left:calc(8px + '+pct+'% * .86);width:26px;height:10px;margin:-5px 0 0 -2px;border-radius:3px;background:'+(fin?'var(--ok)':'var(--acHi)')+';transform:skewX(-20deg);box-shadow:0 0 18px '+(fin?'rgba(99,209,147,.5)':'rgba(255,106,46,.45)')+';animation:batonIn 1s '+E+' both;transition:left .6s '+E,
+      bigBaton:'position:absolute;top:50%;left:calc(8px + '+pct+'% * .86);width:26px;height:10px;margin:-5px 0 0 -2px;border-radius:3px;background:'+(fin?'var(--ok)':'var(--acHi)')+';transform:skewX(-20deg);box-shadow:0 0 18px '+(fin?'rgba(99,209,147,.5)':'rgba(130,147,231,.55)')+';animation:batonIn 1s '+E+' both;transition:left .6s '+E,
       pick:()=>this.setState({role}),
-      laneRow:'display:grid;grid-template-columns:36px 150px minmax(0,1fr) 92px;gap:14px;align-items:center;width:100%;border:0;border-top:1px solid rgba(255,255,255,.07);cursor:pointer;color:var(--inkTx);padding:10px 8px;border-radius:0;transition:background .15s;background:'+(sel?'rgba(255,255,255,.07)':'transparent'),
+      laneRow:'display:grid;grid-template-columns:36px 150px minmax(0,1fr) 92px;gap:14px;align-items:center;width:100%;border:0;border-top:1px solid var(--laneLine,rgba(255,255,255,.07));cursor:pointer;color:var(--inkTx);padding:10px 8px;border-radius:0;transition:background .15s;background:'+(sel?'var(--laneSel,rgba(255,255,255,.07))':'transparent'),
       stStyle:"font:500 11.5px/1 'Geist Mono',monospace;text-align:right;color:"+(fin?'var(--ok)':sel?'var(--acHi)':'var(--inkMu)')};});
     const handAvg=Math.round(lanes.reduce((a,r)=>a+r.pct,0)/4);
     // nav
@@ -640,7 +709,7 @@ class Component extends DCLogic {
         iconStyle:'flex:none;transition:color .2s;color:'+(a?'var(--sbAc)':'currentColor'),
         badgeStyle:"flex:none;min-width:18px;height:18px;padding:0 5px;border-radius:9px;display:grid;place-items:center;font:600 10.5px/1 'Geist Mono',monospace;background:var(--ac);color:var(--onAc);"+(o?'':'position:absolute;top:3px;right:6px;min-width:14px;height:14px;font-size:9px;padding:0 3px')+';transition:all .2s',
         style:'position:relative;display:flex;align-items:center;gap:11px;height:36px;padding:0 11px;border:0;cursor:pointer;border-radius:9px;font-size:13.5px;width:100%;transition:background .2s,color .2s;font-weight:'+(a?600:500)+';color:'+(a?'var(--sbTx)':'var(--sbMu)')+';background:'+(a?'var(--sbSel)':'transparent')};})}));
-    const meta={home:['SAT NOV 7 · WEEK 11 OF 15','Good evening, Jordan'],evt:['RUN THE CLUB','Events'],fin:['RUN THE CLUB · FY26','Money'],mem:['RUN THE CLUB · 45 ACTIVE','People'],mkt:['RUN THE CLUB','Posts'],hand:['PASS IT ON','Handoff'],arc:['PASS IT ON · 18 DOCS','Docs']};
+    const meta={home:['SAT NOV 7 · WEEK 11 OF 15','Good evening, Jordan'],evt:['RUN THE CLUB','Events'],fin:['RUN THE CLUB · FY26','Money'],mem:['RUN THE CLUB · 45 ACTIVE','People'],mkt:['RUN THE CLUB','Posts'],hand:['PASS IT ON','Handoff'],arc:['PASS IT ON · '+(14+s.docs.length)+' DOCS','Docs']};
     // tasks
     const tdef=[['room','Book the Rec Center for Robo-Rumble','Requests need 14 days. You have 8.','Fri','ac','How?',()=>this.ask('How do we book a room on short notice?','room')],
       ['post','Approve the Robo-Rumble post','Queued for Thursday 10am','Thu','mu','Review',go('mkt')],
@@ -694,16 +763,22 @@ class Component extends DCLogic {
     const exitSegs=[0,1,2,3].map(j=>'height:4px;border-radius:2px;transition:background .4s;background:'+(done||j<=i?'var(--ac)':'var(--sub)'));
     const roleSel=lanes.find(r=>r.role===s.role)||lanes[1];
     // docs
-    const docAll=[['Spring Gala Recap','Recap','Priya Nair','2025',14],['Vendor Contacts','Contacts','Maya Chen','2026',12],['Budget FY25','Sheet','Maya Chen','2025',11],['Treasurer Reflection','Handoff','Ravi Shah','2025',9],['Officer Playbook','Guide','Jordan Ellis','2024',8],['Robo-Rumble Recap','Recap','Priya Nair','2025',7],['Secretary Handoff','Handoff','Luis Ortega','2026',6],['Fall Kickoff Minutes','Minutes','Luis Ortega','2025',5],['Constitution','Policy','Exec board','2023',4],['Membership Sheet','Sheet','Luis Ortega','2026',3],['Marketing Notes','Guide','Tara Brooks','2025',2],['Workshop Series Notes','Recap','Priya Nair','2025',2]];
+    const docAll=[['Spring Gala Recap','Recap','Priya Nair','2025',14],['Vendor Contacts','Contacts','Maya Chen','2026',12],['Budget FY25','Sheet','Maya Chen','2025',11],['Treasurer Reflection','Handoff','Ravi Shah','2025',9],['Officer Playbook','Guide','Jordan Ellis','2024',8],['Robo-Rumble Recap','Recap','Priya Nair','2025',7],['Secretary Handoff','Handoff','Luis Ortega','2026',6],['Fall Kickoff Minutes','Minutes','Luis Ortega','2025',5],['Constitution','Policy','Exec board','2023',4],['Membership Sheet','Sheet','Luis Ortega','2026',3],['Marketing Notes','Guide','Tara Brooks','2025',2],['Workshop Series Notes','Recap','Priya Nair','2025',2],['Student Activities Room Rules (SAMPLE)','Policy','Exec board','2026',0],['Funds and Signature Rules (SAMPLE)','Policy','Exec board','2026',0],...s.docs.map(d=>[d.title,({rules:'Policy',event:'Recap',lessons:'Lessons',contacts:'Contacts',finance:'Sheet',handoff:'Handoff',guide:'Guide'})[d.category]||'Guide',d.author||'Imported',d.year||'',0])];
     const ql=s.q.toLowerCase();
     const docs=docAll.filter(x=>!ql||x.join(' ').toLowerCase().includes(ql)).map(([n,tt,ow,y,c],j)=>({n,t:tt,o:ow,y,c:c+'×',tag:pill(tt==='Handoff'?'ac':'mu'),row:rowA(j,'display:grid;grid-template-columns:minmax(200px,1.6fr) 110px 120px 70px 90px;gap:12px;align-items:center;padding:10px 16px;border-top:'+(j?'1px solid var(--line)':'0')+';min-width:640px')}));
+    // import for handoff
+    const impCats=[['rules','TAMU rules'],['lessons','What worked / didn’t'],['event','Event recap'],['contacts','Contacts'],['guide','General guide']].map(([id,l])=>({l,go:()=>this.setState({impC:id}),style:'height:30px;padding:0 11px;border-radius:10px;cursor:pointer;font-size:12.5px;font-weight:600;transition:all .15s;border:1px solid '+(s.impC===id?'var(--tx)':'var(--line)')+';background:'+(s.impC===id?'var(--tx)':'var(--card)')+';color:'+(s.impC===id?'var(--bg)':'var(--mu)')}));
+    const impOk=!!(s.impT.trim()&&s.impX.trim());
+    const saveImp=()=>{ if(!impOk) return; this.addDoc({title:s.impT.trim(),category:s.impC,event:s.impE.trim(),year:s.impY.trim(),author:'Jordan Ellis',text:s.impX.trim()}); this.setState({impOpen:false,impT:'',impE:'',impX:''}); this.toast('Added to the Playbook’s memory'); };
+    const impFile=e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; if(f.size>200000){ this.toast('That file is too large. Paste the key parts instead.'); return; } const r=new FileReader(); r.onload=()=>this.setState(x=>({impX:String(r.result||'').slice(0,6000),impT:x.impT||f.name.replace(/\.[^.]+$/,'')})); r.readAsText(f); };
+    const impField='width:100%;height:38px;padding:0 12px;border:1px solid var(--line);outline:0;border-radius:10px;background:var(--sub);color:var(--tx);font-size:14px';
     // playbook
-    const msgs=s.msgs.map(m=>{const full=m.n===undefined||m.n>=m.total;return {text:full?m.text:m.text.split(' ').slice(0,m.n).join(' '),hasSrc:full&&m.src.length>0,
+    const msgs=s.msgs.map(m=>{const full=m.n===undefined||m.n>=m.total;return {text:full?m.text:m.text.split(' ').slice(0,m.n).join(' '),hasSrc:full&&m.src.length>0,hasTag:full&&!!m.tag,tag:m.tag,tagStyle:pill(m.prec==='FOUND'?'ok':m.prec==='ANALOGOUS'?'ac':'mu'),
       sources:m.src.map(n=>({n,go:()=>this.setState({tab:'arc',q:n.split(' ')[0]})})),
       wrap:'display:flex;flex-direction:column;align-items:'+(m.r==='u'?'flex-end':'flex-start')+';animation:rise .3s '+E+' both',
-      bubble:m.r==='u'?'max-width:85%;padding:8px 12px;border-radius:12px 12px 3px 12px;background:var(--tx);color:var(--bg);line-height:1.5':'line-height:1.6;text-wrap:pretty'};});
+      bubble:m.r==='u'?'max-width:85%;padding:8px 12px;border-radius:12px 12px 3px 12px;background:var(--tx);color:var(--bg);line-height:1.5':'line-height:1.6;text-wrap:pretty;white-space:pre-line'};});
     const sugMap={home:[['What went wrong at Robo-Rumble last year?','rumble'],['Who do we call for catering?','cater'],['How did we fund the spring gala?','gala']],evt:[['How do we book a room on short notice?','room'],['Who do we call for catering?','cater']],fin:[['Where does most of our money go?','spend'],['How did we fund the spring gala?','gala']],mem:[['Who can run for officer?','elig']],mkt:[['Which posts get the most turnout?','posts']],hand:[["What did last year's treasurer leave undone?",'treas']],arc:[['How did we fund the spring gala?','gala'],['How do we book a room?','room']]};
-    const sugs=(sugMap[t]||[]).map(([q,k])=>({q,go:()=>this.ask(q,k)}));
+    const sugs=s.fu.length?s.fu.map(q=>({q,go:()=>this.ask(q)})):(sugMap[t]||[]).map(([q,k])=>({q,go:()=>this.ask(q,k)}));
     const submit=e=>{e.preventDefault();const q=s.draft.trim();if(!q)return;this.ask(q,this.classify(q.toLowerCase()));};
     const W=o?260:84;
     return {themeVars,groups,labelStyle,labelFlex,sideExpanded:o?'true':'false',sideTheme:d?'dark':'light',
@@ -720,7 +795,7 @@ class Component extends DCLogic {
       toggleAi:()=>this.setAi(!s.ai),closeAi:()=>this.setAi(false),
       themeIcon:d?'M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4':'M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z',
       toggleTheme:()=>this.setState({dark:!d}),
-      drawerStyle:'position:absolute;top:10px;right:10px;bottom:10px;width:min(392px,calc(100% - 20px));z-index:10;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--drawerSh);transition:transform .42s '+E+',opacity .3s;transform:translateX('+(s.ai?'0':'calc(100% + 24px)')+');opacity:'+(s.ai?1:0)+';pointer-events:'+(s.ai?'auto':'none'),
+      drawerStyle:'position:absolute;top:10px;right:10px;bottom:10px;width:min(392px,calc(100% - 20px));z-index:10;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--drawerSh);transition:transform .42s '+E+',opacity .3s,visibility 0s linear '+(s.ai?'0s':'.42s')+';transform:translateX('+(s.ai?'0':'calc(100% + 24px)')+');opacity:'+(s.ai?1:0)+';visibility:'+(s.ai?'visible':'hidden')+';pointer-events:'+(s.ai?'auto':'none'),
       isHome:t==='home',isEvt:t==='evt',isFin:t==='fin',isMem:t==='mem',isMkt:t==='mkt',isHand:t==='hand',isArc:t==='arc',
       goEvents:go('evt',{evt:0}),goHand:go('hand'),askRumble:()=>this.ask('What went wrong at Robo-Rumble last year?','rumble'),
       readySegs,readyLabel:nReady+' OF 6 READY',readyBar:bar(nReady/6*100,'var(--ok)'),missing,checklist,
@@ -740,9 +815,11 @@ class Component extends DCLogic {
       isTreas:s.role==='Treasurer',notTreas:s.role!=='Treasurer',roleSel,
       nudge:()=>{ if(s.nudged) return; this.setState({nudged:true}); this.toast('Interview invite sent to Priya'); },nudgeLabel:s.nudged?'Invite sent':'Send Priya an interview invite',
       exitStepLabel:done?'COMPLETE':'QUESTION '+(i+1)+' OF 4',exitSegs,exitQ:done?'Handoff filed.':qs[i][0],exitA:done?"It's in Docs now, and the incoming treasurer can read it or ask the Playbook about it.":qs[i][1],
-      exitPrev:()=>this.setState({step:Math.max(0,i-1)}),exitNext:()=>{ if(i===3) this.toast('Treasurer handoff filed to Docs'); this.setState({step:done?0:i+1}); },exitNextLabel:done?'Start over':i===3?'Finish and file':'Next question',handoff,
+      exitPrev:()=>this.setState({step:Math.max(0,i-1)}),exitNext:()=>{ if(i===3){ this.toast('Treasurer handoff filed to Docs'); this.addDoc({title:'Treasurer Handoff Interview (Maya Chen)',category:'handoff',event:'',year:'2026',author:'Maya Chen',text:qs.map(([qq,aa])=>'Q: '+qq+' A: '+aa).join(' ')}); } this.setState({step:done?0:i+1}); },exitNextLabel:done?'Start over':i===3?'Finish and file':'Next question',handoff,
       q:s.q,setQ:e=>this.setState({q:e.target.value}),docs,noDocs:docs.length===0,
-      msgRef:this.msgRef,inputRef:this.inputRef,msgs,typing:s.typing,sugs,sugLabel:'TRY ASKING',draft:s.draft,setDraft:e=>this.setState({draft:e.target.value}),submit,
+      impOpen:s.impOpen,toggleImp:()=>this.setState({impOpen:!s.impOpen}),impCats,impT:s.impT,setImpT:e=>this.setState({impT:e.target.value}),impE:s.impE,setImpE:e=>this.setState({impE:e.target.value}),impY:s.impY,setImpY:e=>this.setState({impY:e.target.value}),impX:s.impX,setImpX:e=>this.setState({impX:e.target.value}),impFile,saveImp,impField,
+      impSaveStyle:'border:0;height:36px;padding:0 16px;border-radius:9px;font-weight:600;font-size:13.5px;transition:opacity .2s,transform .15s;cursor:'+(impOk?'pointer':'not-allowed')+';opacity:'+(impOk?1:.45)+';background:var(--ac);color:var(--onAc)',
+      msgRef:this.msgRef,inputRef:this.inputRef,msgs,typing:s.typing,sugs,sugLabel:s.fu.length?'FOLLOW UP':'TRY ASKING',docCount:14+s.docs.length,draft:s.draft,setDraft:e=>this.setState({draft:e.target.value}),submit,
       hasToast:!!s.toast,toastText:s.toast||''};
   }
 }

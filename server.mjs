@@ -1,32 +1,59 @@
+// Local dev server: serves the app built straight from Relay.dc.html and runs
+// the same /api/chat handler Vercel runs in production.
 import { createServer } from 'node:http';
+import { existsSync, readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
+import { renderIndex } from './scripts/build-site.mjs';
+import { POST as chat } from './api/chat.mjs';
+
+// Tiny .env.local loader so local dev matches Vercel without a dependency.
+for (const name of ['.env.local', '.env']) {
+  const file = new URL(name, import.meta.url);
+  if (!existsSync(file)) continue;
+  for (const line of readFileSync(file, 'utf8').split(/\r?\n/)) {
+    const m = /^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/.exec(line);
+    if (m && !(m[1] in process.env)) process.env[m[1]] = m[2].replace(/^(['"])(.*)\1$/, '$2');
+  }
+}
 
 const port = Number(process.env.PORT || 3000);
-const files = new Map([
-  ['/', ['Relay-standalone.html', 'text/html; charset=utf-8']],
-  ['/Relay-standalone.html', ['Relay-standalone.html', 'text/html; charset=utf-8']],
-  ['/Relay.dc.html', ['Relay.dc.html', 'text/html; charset=utf-8']],
-  ['/support.js', ['support.js', 'text/javascript; charset=utf-8']],
-]);
+const nostore = { 'Cache-Control': 'no-store' };
+
+async function readBody(req, limit = 512 * 1024) {
+  const chunks = [];
+  let size = 0;
+  for await (const c of req) {
+    size += c.length;
+    if (size > limit) throw new Error('body too large');
+    chunks.push(c);
+  }
+  return Buffer.concat(chunks);
+}
 
 const server = createServer(async (req, res) => {
-  if (req.method !== 'GET' && req.method !== 'HEAD') {
-    res.writeHead(405, { Allow: 'GET, HEAD' }).end();
-    return;
-  }
   const pathname = new URL(req.url, 'http://localhost').pathname;
-  const file = files.get(pathname);
-  if (!file) {
-    res.writeHead(404).end('Not found');
-    return;
-  }
   try {
-    const body = await readFile(new URL(file[0], import.meta.url));
-    res.writeHead(200, { 'Content-Type': file[1], 'Cache-Control': 'no-store' });
-    res.end(req.method === 'HEAD' ? undefined : body);
+    if (pathname === '/api/chat') {
+      if (req.method !== 'POST') return void res.writeHead(405, { Allow: 'POST' }).end();
+      const body = await readBody(req);
+      const response = await chat(new Request('http://localhost/api/chat', { method: 'POST', headers: { 'content-type': 'application/json' }, body }));
+      res.writeHead(response.status, { 'Content-Type': 'application/json', ...nostore });
+      return void res.end(await response.text());
+    }
+    if (req.method !== 'GET' && req.method !== 'HEAD') return void res.writeHead(405, { Allow: 'GET, HEAD' }).end();
+    if (pathname === '/' || pathname === '/index.html') {
+      const html = renderIndex(await readFile(new URL('Relay.dc.html', import.meta.url), 'utf8'));
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', ...nostore });
+      return void res.end(req.method === 'HEAD' ? undefined : html);
+    }
+    if (pathname === '/support.js') {
+      res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8', ...nostore });
+      return void res.end(await readFile(new URL('support.js', import.meta.url)));
+    }
+    res.writeHead(404).end('Not found');
   } catch (error) {
     console.error(error.message);
-    res.writeHead(500).end('Unable to load the project file');
+    res.writeHead(500).end('Server error');
   }
 });
 
@@ -36,4 +63,5 @@ server.on('error', (error) => {
 });
 server.listen(port, '127.0.0.1', () => {
   console.log(`Relay is ready at http://localhost:${port}`);
+  if (!process.env.GEMINI_API_KEY) console.log('GEMINI_API_KEY is not set: the Playbook will use its built-in sample answers.');
 });

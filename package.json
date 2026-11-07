@@ -4,6 +4,8 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "node server.mjs",
-    "start": "node server.mjs"
+    "start": "node server.mjs",
+    "build": "node scripts/build-site.mjs",
+    "test": "node --test tests/chat.test.mjs"
   }
 }

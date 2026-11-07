@@ -3,9 +3,26 @@
 ## Local preview
 
 With Node.js installed, run `npm run dev` and open http://localhost:3000.
-No dependency installation is needed. This serves the interactive standalone
-prototype, including the updated sidebar and dashboard styling. To use a
+No dependency installation is needed. This serves the interactive
+app built from `Relay.dc.html` (the source of truth), including the glass-style sidebar and dashboard. To use a
 different port, run `PORT=3001 npm run dev`.
+
+## The Playbook (Gemini) and club memory
+
+The Playbook panel (⌘K) is backed by `api/chat.mjs`, which asks Gemini and grounds every answer in the club's own docs. Think of it as a very well-read outgoing officer: it knows the rules, the recaps, and what worked or didn't.
+
+**Two-minute setup**
+1. Copy `.env.example` to `.env.local` and paste your key after `GEMINI_API_KEY=`. This file is gitignored.
+2. `npm run dev`, open http://localhost:3000, press ⌘K.
+3. In production, add the same `GEMINI_API_KEY` in Vercel (Project Settings → Environment Variables). The key only ever lives on the server.
+
+No key? The Playbook still works with its built-in sample answers, so demos never break.
+
+**How it remembers.** `knowledge/seed.json` holds the starter docs. At handoff, outgoing officers use **Docs → Import for handoff** to add TAMU rules, event recaps and "what worked / what didn't" notes. Every question retrieves the most relevant docs and sends them to Gemini. If the club has done the thing before, it gets the history and a recommendation; if not, it says so plainly and works from the closest precedents.
+
+Heads up: imported docs are saved in the browser for now (so they follow that officer's browser, not the whole club). Moving them to shared storage is the next step.
+
+`npm test` runs the retrieval and API tests (no network or key needed).
 
 ## Overview
 Relay is a dashboard for student-organization officers (sample org: Aggie Robotics). It covers day-to-day ops (events, money, people, social posts) and continuity (officer handoffs, an archive of club docs). A slide-in "Playbook" panel answers questions from the club's docs with cited sources.
