@@ -968,10 +968,11 @@ class Component extends DCLogic {
     const screen=({home:'Overview',evt:'Events',fin:'Money',mem:'People',mkt:'Posts',hand:'Handoff',arc:'Docs'})[this.state.tab||this.props.startTab||'home'];
     this.setState(s=>({ai:true,draft:'',typing:true,fu:[],msgs:[...s.msgs,{r:'u',text:q,src:[]}]}));
     // Offline/unconfigured fallback: the original canned answers, so the prototype still demos without a key.
-    const offline=()=>{ const a=this.qa[k||this.classify(q.toLowerCase())]; return {answer:a[0],sources:a[1],precedent:null,followups:[]}; };
-    const call=fetch('/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({question:q,history:hist,screen,docs:this.state.docs})})
+    const offline=()=>{ const a=this.qa[k||this.classify(q.toLowerCase())]; return {answer:'Demo answer based on sample club data: '+a[0],sources:a[1],precedent:null,followups:[]}; };
+    const chatController=new AbortController(); const chatTimeout=setTimeout(()=>chatController.abort(),6000);
+    const call=fetch('/api/chat',{method:'POST',headers:{'content-type':'application/json'},signal:chatController.signal,body:JSON.stringify({question:q,history:hist,screen,docs:this.state.docs})})
       .then(r=>r.ok?r.json():Promise.reject(new Error(String(r.status))))
-      .then(a=>a&&a.answer?a:offline(),()=>offline());
+      .then(a=>a&&a.answer?a:offline(),()=>offline()).finally(()=>clearTimeout(chatTimeout));
     // Hold the typing dots for at least 700ms so a fast answer doesn't pop in abruptly.
     Promise.all([call,new Promise(r=>{this.t1=setTimeout(r,700);})]).then(([a])=>{ if(id===this.askId) this.reply(a); });
   }
@@ -993,15 +994,18 @@ class Component extends DCLogic {
     if(s.writing) return;
     if(!prompt){ this.toast('Describe the post first.'); return; }
     this.setState({writing:true,flags:[]});
-    let res=null, why='the AI service could not be reached';
+    let res=null;
+    const postController=new AbortController(); const postTimeout=setTimeout(()=>postController.abort(),8000);
     try{
-      const r=await fetch('/api/post',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({prompt,tone:s.tone,art:s.useArt,docs:s.docs})});
-      if(r.ok) res=await r.json(); else why=r.status===503?'the AI service is unavailable':'the AI service returned an error ('+r.status+')';
-    }catch(e){}
+      const r=await fetch('/api/post',{method:'POST',headers:{'content-type':'application/json'},signal:postController.signal,body:JSON.stringify({prompt,tone:s.tone,art:s.useArt,docs:s.docs})});
+      if(r.ok) res=await r.json();
+    }catch(e){} finally { clearTimeout(postTimeout); }
     // No key or API down: still produce a legit post from only what was typed, using the same template.
-    if(!res||!res.spec) res={spec:window.RelayPoster.fallbackSpec(prompt,s.tone),flags:['Offline mode: '+why+', so this post uses only what you typed and no AI artwork.'],art:null};
+    if(!res||!res.spec) res={spec:window.RelayPoster.fallbackSpec(prompt,s.tone),flags:['Created with the built-in template using the details you provided. AI artwork was not used.'],art:null};
     try{
-      const out=await window.RelayPoster.compose(res.spec,{artSrc:res.art&&res.art.dataUrl,photoSrc:s.photo});
+      let out;
+      try { out=await window.RelayPoster.compose(res.spec,{artSrc:res.art&&res.art.dataUrl,photoSrc:s.photo}); }
+      catch(e) { out=await window.RelayPoster.compose(res.spec,{}); res.flags=[...(res.flags||[]),'Created with the built-in graphic; the selected image could not be used.']; }
       const post={title:res.spec.headline,meta:[res.spec.date,res.spec.place].filter(Boolean).join(' · ')||'NEW POST',cap:res.spec.caption+'\n'+res.spec.hashtags.join(' '),st:0,img:out.thumb,full:out.full,spec:res.spec};
       this.setState(x=>({writing:false,flags:res.flags||[],posts:[post,...x.posts],pv:post}));
       this.toast('Post ready for approval');
@@ -1306,7 +1310,7 @@ class Component extends DCLogic {
       useArt:s.useArt,toggleArt:()=>this.setState({useArt:!s.useArt}),artChip:'height:30px;padding:0 11px;border-radius:10px;cursor:pointer;font-size:12.5px;font-weight:600;transition:all .15s;border:1px solid '+(s.useArt?'var(--ac)':'var(--line)')+';background:'+(s.useArt?'var(--acS)':'var(--card)')+';color:'+(s.useArt?'var(--acT)':'var(--mu)'),
       hasPhoto:!!s.photo,noPhoto:!s.photo,pickPhoto:e=>this.pickPhoto(e),clearPhoto:()=>this.setState({photo:null}),
       flags:s.flags,hasFlags:s.flags.length>0,
-      hasPv:!!s.pv,pvSrc:s.pv?s.pv.full:'',pvCap:s.pv?s.pv.cap:'',downloadPost:()=>this.downloadPost(),copyCap:()=>{ try{ navigator.clipboard.writeText(s.pv.cap); this.toast('Caption copied'); }catch(e){ this.toast('Copy failed'); } },
+      hasPv:!!s.pv,pvSrc:s.pv?s.pv.full:'',pvCap:s.pv?s.pv.cap:'',downloadPost:()=>this.downloadPost(),copyCap:async()=>{ try{ await navigator.clipboard.writeText(s.pv.cap); this.toast('Caption copied'); }catch(e){ this.toast('Select the caption in the queue to copy it.'); } },
       posts,queueLabel:pendingPosts+' NEED APPROVAL',
       isTreas:s.role==='Treasurer',notTreas:s.role!=='Treasurer',roleSel,
       nudge:()=>{ if(s.nudged) return; this.setState({nudged:true}); this.toast('Interview invite sent to Priya'); },nudgeLabel:s.nudged?'Invite sent':'Send Priya an interview invite',
