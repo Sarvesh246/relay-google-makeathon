@@ -6,6 +6,176 @@
 <script src="./support.js"></script>
 <script src="./poster.js"></script>
 <script src="./drive.js"></script>
+<script data-relay-calendar>
+(function (root) {
+  'use strict';
+
+  var MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  var MONTH_OFFSETS = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+
+  function pad(value, length) {
+    return String(value).padStart(length || 2, '0');
+  }
+
+  function leapYear(year) {
+    return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  }
+
+  function daysInMonth(year, month) {
+    if (month === 2) return leapYear(year) ? 29 : 28;
+    return [4, 6, 9, 11].indexOf(month) >= 0 ? 30 : 31;
+  }
+
+  function parseMonth(value) {
+    if (typeof value !== 'string' || value.length !== 7 || !/^\d{4}-(0[1-9]|1[0-2])$/.test(value)) {
+      throw new RangeError('Use a month in YYYY-MM format.');
+    }
+    var year = Number(value.slice(0, 4));
+    if (year < 1) throw new RangeError('Choose a year between 0001 and 9999.');
+    return { year: year, month: Number(value.slice(5, 7)) };
+  }
+
+  function parseDate(value) {
+    if (typeof value !== 'string' || value.length !== 10 || !/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(value)) return null;
+    var year = Number(value.slice(0, 4));
+    var month = Number(value.slice(5, 7));
+    var day = Number(value.slice(8, 10));
+    if (year < 1 || day > daysInMonth(year, month)) return null;
+    return { year: year, month: month, day: day };
+  }
+
+  function dateKey(date) {
+    return pad(date.year, 4) + '-' + pad(date.month) + '-' + pad(date.day);
+  }
+
+  function validTime(time) {
+    return typeof time === 'string' && time.length === 5 && /^([01]\d|2[0-3]):[0-5]\d$/.test(time);
+  }
+
+  function today(timeZone) {
+    var parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: timeZone === undefined ? 'America/Chicago' : timeZone,
+      calendar: 'iso8601',
+      numberingSystem: 'latn',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).formatToParts(new Date());
+    var fields = {};
+    parts.forEach(function (part) { fields[part.type] = part.value; });
+    return fields.year.padStart(4, '0') + '-' + fields.month + '-' + fields.day;
+  }
+
+  function moveMonth(monthKey, delta) {
+    var parsed = parseMonth(monthKey);
+    if (!Number.isSafeInteger(delta)) throw new RangeError('Move by a whole number of months.');
+    var index = (parsed.year - 1) * 12 + parsed.month - 1 + delta;
+    if (!Number.isSafeInteger(index) || index < 0 || index >= 9999 * 12) {
+      throw new RangeError('Choose a year between 0001 and 9999.');
+    }
+    return pad(Math.floor(index / 12) + 1, 4) + '-' + pad(index % 12 + 1);
+  }
+
+  function monthLabel(monthKey) {
+    var parsed = parseMonth(monthKey);
+    return MONTH_NAMES[parsed.month - 1] + ' ' + parsed.year;
+  }
+
+  function mondayIndex(year, month, day) {
+    // January 1, 0001 was Monday in the proleptic Gregorian calendar.
+    var previousYear = year - 1;
+    var days = 365 * previousYear + Math.floor(previousYear / 4) - Math.floor(previousYear / 100) + Math.floor(previousYear / 400);
+    days += MONTH_OFFSETS[month - 1] + day - 1;
+    if (month > 2 && leapYear(year)) days += 1;
+    return days % 7;
+  }
+
+  function nextDate(date) {
+    date.day += 1;
+    if (date.day > daysInMonth(date.year, date.month)) {
+      date.day = 1;
+      date.month += 1;
+      if (date.month > 12) {
+        date.month = 1;
+        date.year += 1;
+      }
+    }
+  }
+
+  function compareEvents(left, right) {
+    var leftTime = typeof left.time === 'string' ? left.time : '';
+    var rightTime = typeof right.time === 'string' ? right.time : '';
+    if (leftTime !== rightTime) return leftTime < rightTime ? -1 : 1;
+    return String(left.title || '').localeCompare(String(right.title || ''), 'en');
+  }
+
+  function monthGrid(monthKey, events, todayISO) {
+    var parsed = parseMonth(monthKey);
+    var offset = mondayIndex(parsed.year, parsed.month, 1);
+    var count = Math.ceil((offset + daysInMonth(parsed.year, parsed.month)) / 7) * 7;
+    var cursor = { year: parsed.year, month: parsed.month, day: 1 };
+    if (offset) {
+      cursor.month -= 1;
+      if (cursor.month === 0) {
+        cursor.month = 12;
+        cursor.year -= 1;
+      }
+      cursor.day = daysInMonth(cursor.year, cursor.month) - offset + 1;
+    }
+    var byDate = new Map();
+    (Array.isArray(events) ? events : []).forEach(function (event) {
+      if (!event || !parseDate(event.date)) return;
+      if (!byDate.has(event.date)) byDate.set(event.date, []);
+      byDate.get(event.date).push(event);
+    });
+    byDate.forEach(function (items) { items.sort(compareEvents); });
+    var currentDate = todayISO === undefined ? today() : todayISO;
+    var grid = [];
+    for (var index = 0; index < count; index += 1) {
+      if (cursor.year < 1 || cursor.year > 9999) throw new RangeError('This month extends beyond supported calendar years.');
+      var key = dateKey(cursor);
+      grid.push({
+        date: key,
+        day: cursor.day,
+        inMonth: cursor.year === parsed.year && cursor.month === parsed.month,
+        isToday: key === currentDate,
+        events: byDate.get(key) || []
+      });
+      nextDate(cursor);
+    }
+    return grid;
+  }
+
+  function validateEvent(input) {
+    if (!input || typeof input !== 'object' || Array.isArray(input)) return { valid: false, error: 'Add an event title and date.' };
+    if (typeof input.title !== 'string' || !input.title.trim()) return { valid: false, error: 'Add an event title.' };
+    var title = input.title.trim();
+    if (title.length > 120) return { valid: false, error: 'Keep the title to 120 characters or fewer.' };
+    var date = parseDate(input.date);
+    if (!date || date.year < 1900 || date.year > 2100) return { valid: false, error: 'Choose a valid date between 1900 and 2100.' };
+    var time = input.time === undefined ? '' : input.time;
+    if (time !== '' && !validTime(time)) {
+      return { valid: false, error: 'Choose a valid time in 24-hour HH:mm format.' };
+    }
+    var location = input.location === undefined ? '' : input.location;
+    if (typeof location !== 'string') return { valid: false, error: 'Enter a location as text.' };
+    location = location.trim();
+    if (location.length > 160) return { valid: false, error: 'Keep the location to 160 characters or fewer.' };
+    return { valid: true, error: '', event: { title: title, date: input.date, time: time, location: location } };
+  }
+
+  function formatTime(time) {
+    if (!validTime(time)) return 'All day';
+    var hour = Number(time.slice(0, 2));
+    return (hour % 12 || 12) + ':' + time.slice(3) + (hour < 12 ? ' AM' : ' PM');
+  }
+
+  var api = Object.freeze({ today: today, moveMonth: moveMonth, monthLabel: monthLabel, monthGrid: monthGrid, validateEvent: validateEvent, formatTime: formatTime });
+  root.RelayCalendar = api;
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+</script>
 </head>
 <body>
 <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#16161D"/><rect x="30" y="30" width="40" height="40" rx="10" fill="#FF5A1F"/><rect x="41" y="38" width="6" height="22" rx="2" fill="#17130F" transform="skewX(-18) translate(14 0)"/><rect x="51" y="42" width="6" height="22" rx="2" fill="#17130F" opacity=".5" transform="skewX(-18) translate(14 0)"/></svg></template>
@@ -236,6 +406,65 @@
 @media(prefers-reduced-motion:reduce) {.relay-drawer form::before,.relay-drawer form::after {animation:none}}
 @media(max-width:1150px) {.relay-screen .relay-stats {grid-template-columns:repeat(2,minmax(0,1fr)) !important}}
 @media(prefers-reduced-motion:reduce) {.relay-screen *,.relay-drawer * {transition:none !important;animation:none !important}}
+</style><style>.relay-events {--event-text:var(--dash-text,#1c2444);--event-muted:var(--dash-muted,#777f98);--event-edge:var(--dash-edge,rgba(255,255,255,.8));--event-surface:var(--dash-surface,linear-gradient(135deg,#f5f6fa,#e8edf4));--event-shadow:var(--dash-shadow,5px 8px 18px rgba(110,125,160,.16));display:flex !important;flex-direction:column;gap:22px !important;color:var(--event-text)}
+.relay-month-calendar {width:100%;min-width:0}
+.relay-calendar-toolbar {display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:4px 2px 20px}
+.relay-calendar-toolbar h2 {margin:0;font:700 24px/1.1 'Bricolage Grotesque',sans-serif;letter-spacing:-.035em}
+.relay-calendar-nav {display:flex;align-items:center;justify-content:center;gap:17px}
+.relay-calendar-nav strong {font-size:21px;font-weight:600;min-width:172px;text-align:center;letter-spacing:-.025em}
+.relay-events button {font-family:inherit;cursor:pointer}
+.relay-cal-arrow,.relay-cal-action {border:1px solid var(--event-edge);background:var(--event-surface);color:var(--event-text);box-shadow:5px 6px 12px rgba(112,125,160,.18),-4px -4px 10px rgba(255,255,255,.7);transition:transform .18s,box-shadow .18s}
+.relay-cal-arrow {width:38px;height:38px;border-radius:14px;display:grid;place-items:center;padding:0;color:var(--event-muted)}
+.relay-cal-action {height:40px;border-radius:14px;padding:0 16px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.relay-cal-action.primary {background:linear-gradient(120deg,#849fe9,#9b83dd);color:white;box-shadow:0 7px 14px rgba(125,121,208,.23),inset 0 1px 1px rgba(255,255,255,.4)}
+.relay-calendar-actions {display:flex;gap:10px}
+.relay-calendar-scroll {overflow-x:auto;padding:5px 5px 12px;margin:0 -5px}
+.relay-calendar-board {border:1px solid var(--event-edge);border-radius:26px;padding:16px;background:var(--event-surface);box-shadow:var(--event-shadow);min-width:640px}
+.relay-calendar-week,.relay-calendar-days {display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.relay-calendar-week {margin-bottom:11px;text-align:center;color:var(--event-text);font-weight:500;font-size:13px}
+.relay-calendar-week > div {padding:3px 0}
+.relay-calendar-day {position:relative;min-height:94px;padding:8px;border-radius:15px;border:1px solid rgba(255,255,255,.75);background:linear-gradient(145deg,rgba(255,255,255,.4),rgba(218,224,238,.22));box-shadow:inset 1px 1px 2px rgba(255,255,255,.65),2px 3px 5px rgba(126,139,172,.08);transition:background .2s,box-shadow .2s;display:flex;flex-direction:column;gap:4px}
+.relay-calendar-day.is-outside {opacity:.46}
+.relay-calendar-day.is-selected:not(.is-today) {box-shadow:inset 0 0 0 1.5px #9695d3,2px 4px 8px rgba(120,128,177,.12)}
+.relay-date-button {border:0;background:transparent;color:inherit;text-align:left;padding:0 0 4px;width:100%;font-size:13px;line-height:1.3;min-height:24px}
+.relay-calendar-day.is-today {background:linear-gradient(135deg,#5ed8dc 0%,#6f9ced 48%,#9564e3 100%);color:white;border-color:rgba(255,255,255,.55);box-shadow:0 7px 14px rgba(107,127,211,.25),inset 0 1px 1px rgba(255,255,255,.45)}
+.relay-today-label {font-size:11px;font-weight:600;color:inherit;opacity:.95;position:absolute;right:9px;top:9px;pointer-events:none}
+.relay-calendar-event {border:0;border-left:2px solid #9b8cda;border-radius:7px;padding:5px 6px;background:rgba(167,170,222,.17);color:var(--event-text);text-align:left;line-height:1.3;display:flex;flex-direction:column;gap:2px;width:100%;min-width:0}
+.relay-calendar-event span:first-child {font-size:9px;color:var(--event-muted)}
+.relay-calendar-event span:last-child {font-size:11px;font-weight:600;overflow-wrap:anywhere}
+.relay-calendar-day.is-today .relay-calendar-event {background:rgba(255,255,255,.23);border-left-color:rgba(255,255,255,.8);color:white}
+.relay-calendar-day.is-today .relay-calendar-event span {color:inherit}
+.relay-calendar-footer {display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 4px 0;color:var(--event-muted);font-size:11px}
+.relay-calendar-details {width:100%;display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.relay-events .relay-event-plans,.relay-events .relay-event-detail,.relay-events .relay-day-agenda,.relay-calendar-form {border:1px solid var(--event-edge) !important;border-radius:22px !important;background:var(--event-surface) !important;box-shadow:var(--event-shadow) !important;overflow:hidden}
+.relay-event-plans {flex:0 1 300px !important;min-width:min(100%,270px) !important}
+.relay-event-plans > div:first-child {border-bottom:0 !important;padding:18px !important}
+.relay-event-plans > button {background:transparent !important;font-size:12.5px;border-color:rgba(168,179,205,.18) !important;padding:12px 18px !important}
+.relay-event-detail {flex:1 1 440px !important;min-width:0 !important;padding:20px !important}
+.relay-day-agenda {flex:1 1 420px;min-width:0;padding:20px}
+.relay-day-agenda h3 {margin:0 0 14px;font-size:17px;font-weight:650;letter-spacing:-.02em}
+.relay-agenda-item {display:flex;gap:12px;align-items:center;padding:13px 0;border-top:1px solid rgba(168,179,205,.22)}
+.relay-agenda-item > div {flex:1;min-width:0}
+.relay-agenda-item strong {display:block;font-weight:600;font-size:14px;overflow-wrap:anywhere}
+.relay-agenda-item small {display:block;font-size:12px;line-height:1.5;color:var(--event-muted);margin-top:3px}
+.relay-calendar-form {margin:0 0 18px;padding:20px}
+.relay-calendar-form h3 {margin:0 0 16px;font-size:18px;letter-spacing:-.02em}
+.relay-calendar-fields {display:grid;grid-template-columns:2fr 1.1fr 1fr 1.5fr;gap:12px}
+.relay-calendar-fields label {display:flex;flex-direction:column;gap:7px;font-size:11px;font-weight:600;color:var(--event-muted)}
+.relay-calendar-fields input {width:100%;min-width:0;height:40px;border:1px solid var(--event-edge);border-radius:11px;background:rgba(202,211,233,.2);color:var(--event-text);box-shadow:inset 2px 2px 5px rgba(122,135,170,.12),inset -2px -2px 5px rgba(255,255,255,.7);padding:0 11px;outline:none;font:13px 'Instrument Sans',sans-serif}
+.relay-calendar-form-footer {display:flex;align-items:center;gap:12px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.relay-calendar-form-footer small {margin-right:auto;color:var(--event-muted);font-size:11px}
+.relay-event-error {font-size:12px;color:#a33a4f;margin-top:12px}
+.relay-events button:hover {filter:brightness(1.02)}
+.relay-events button:active {transform:scale(.98)}
+.relay-events button:focus-visible,.relay-calendar-fields input:focus-visible {outline:2px solid #7f8dce;outline-offset:3px}
+.relay-dashboard-shell[data-theme="dark"] .relay-calendar-day {background:rgba(142,158,204,.04);border-color:rgba(181,198,241,.12);box-shadow:inset 1px 1px 1px rgba(255,255,255,.03),2px 3px 5px rgba(0,0,0,.12)}
+.relay-dashboard-shell[data-theme="dark"] .relay-calendar-day.is-today {background:linear-gradient(135deg,#298b9b,#5868b5,#8052b8)}
+.relay-dashboard-shell[data-theme="dark"] .relay-calendar-event {background:rgba(142,148,220,.16)}
+.relay-dashboard-shell[data-theme="dark"] .relay-cal-arrow,.relay-dashboard-shell[data-theme="dark"] .relay-cal-action {box-shadow:4px 5px 10px rgba(0,0,0,.2),-3px -3px 8px rgba(117,137,185,.05)}
+.relay-dashboard-shell[data-theme="dark"] .relay-calendar-fields input {background:rgba(9,16,35,.16);box-shadow:inset 2px 2px 5px rgba(0,0,0,.15);color-scheme:dark}
+@media(max-width:1000px) {.relay-calendar-fields {grid-template-columns:repeat(2,minmax(0,1fr))}.relay-calendar-toolbar {gap:14px}.relay-calendar-nav {order:3;width:100%;justify-content:space-between}.relay-calendar-nav strong {min-width:0;font-size:19px}.relay-calendar-board {padding:12px}.relay-calendar-day {min-height:90px}}
+@media(prefers-reduced-motion:reduce) {.relay-events * {transition:none !important;animation:none !important}}
 </style></helmet>
 <div style="{{ themeVars }}">
 <div class="relay-app" data-theme="{{ sideTheme }}" style="height:100vh;display:flex;background:var(--bg);color:var(--tx);font:14px/1.45 'Instrument Sans',system-ui,sans-serif;overflow:hidden;position:relative;transition:background .3s,color .3s">
@@ -362,8 +591,46 @@
 </sc-if>
 
 <sc-if value="{{ isEvt }}" hint-placeholder-val="{{ false }}">
-<div class="relay-screen" data-screen-label="Events" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
-<section style="flex:0 1 360px;min-width:min(100%,300px);background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);overflow:hidden">
+<div class="relay-screen relay-events" data-screen-label="Events" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;animation:rise .45s cubic-bezier(.2,.8,.2,1) both">
+<section class="relay-month-calendar">
+<div class="relay-calendar-toolbar">
+<h2>Calendar</h2>
+<div class="relay-calendar-nav">
+<button class="relay-cal-arrow" onClick="{{ calendarPrev }}" title="Previous month"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"></path></svg></button>
+<strong>{{ calendarMonthLabel }}</strong>
+<button class="relay-cal-arrow" onClick="{{ calendarNext }}" title="Next month"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6l6 6-6 6"></path></svg></button>
+</div>
+<div class="relay-calendar-actions"><button class="relay-cal-action" onClick="{{ calendarToday }}">Today</button><button class="relay-cal-action primary" onClick="{{ calendarOpenForm }}"><span style="font-size:19px;font-weight:400;line-height:1">+</span> Add Event</button></div>
+</div>
+<sc-if value="{{ calendarFormOpen }}" hint-placeholder-val="{{ false }}">
+<form class="relay-calendar-form" onSubmit="{{ calendarSave }}">
+<h3>New event</h3>
+<div class="relay-calendar-fields">
+<label>Event name<input required maxLength="120" value="{{ calendarDraftTitle }}" onChange="{{ calendarSetTitle }}" placeholder="Name your event" autoFocus></label>
+<label>Date<input required type="date" min="1900-01-01" max="2100-12-31" value="{{ calendarDraftDate }}" onChange="{{ calendarSetDate }}"></label>
+<label>Time · optional<input type="time" value="{{ calendarDraftTime }}" onChange="{{ calendarSetTime }}"></label>
+<label>Location · optional<input maxLength="160" value="{{ calendarDraftLocation }}" onChange="{{ calendarSetLocation }}" placeholder="Add a location"></label>
+</div>
+<sc-if value="{{ calendarHasError }}" hint-placeholder-val="{{ false }}"><div class="relay-event-error" role="alert">{{ calendarError }}</div></sc-if>
+<div class="relay-calendar-form-footer"><small>Leave time empty for an all-day event. Saved on this device.</small><button type="button" class="relay-cal-action" onClick="{{ calendarCloseForm }}">Cancel</button><button type="submit" class="relay-cal-action primary">Save event</button></div>
+</form>
+</sc-if>
+<div class="relay-calendar-scroll"><div class="relay-calendar-board">
+<div class="relay-calendar-week"><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div></div>
+<div class="relay-calendar-days">
+<sc-for list="{{ calendarDays }}" as="day" hint-placeholder-count="35">
+<div class="{{ day.className }}">
+<button class="relay-date-button" onClick="{{ day.select }}" title="{{ day.label }}">{{ day.day }}</button>
+<sc-if value="{{ day.isToday }}" hint-placeholder-val="{{ false }}"><span class="relay-today-label">Today</span></sc-if>
+<sc-for list="{{ day.items }}" as="item" hint-placeholder-count="0"><button class="relay-calendar-event" onClick="{{ item.open }}" title="{{ item.label }}"><span>{{ item.timeLabel }}</span><span>{{ item.title }}</span></button></sc-for>
+</div>
+</sc-for>
+</div>
+</div></div>
+<div class="relay-calendar-footer"><span>{{ calendarCountLabel }}</span><span>Past plans with unconfirmed dates are listed below.</span></div>
+</section>
+<div class="relay-calendar-details">
+<section class="relay-event-plans" style="flex:0 1 360px;min-width:min(100%,300px);background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);overflow:hidden">
 <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)"><span style="font:700 15px/1 'Bricolage Grotesque',sans-serif">All events</span><span style="font:500 11.5px/1 'Geist Mono',monospace;color:var(--mu)">1 UPCOMING · 4 PAST</span></div>
 <sc-for list="{{ events }}" as="e" hint-placeholder-count="5"><button onClick="{{ e.pick }}" style="{{ e.row }}" style-hover="background:var(--sub)">
 <div style="flex:none;width:40px;text-align:center"><div style="font:500 10px/1 'Geist Mono',monospace;letter-spacing:.06em;color:var(--mu)">{{ e.mo }}</div><div style="font:700 13px/1.4 'Geist Mono',monospace">{{ e.yr }}</div></div>
@@ -372,7 +639,8 @@
 </button></sc-for>
 </section>
 
-<section style="flex:1 1 480px;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);padding:16px 18px 18px">
+<sc-if value="{{ calendarShowPlan }}" hint-placeholder-val="{{ false }}">
+<section class="relay-event-detail" style="flex:1 1 480px;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);padding:16px 18px 18px">
 <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap">
 <div style="flex:1;min-width:0"><div style="font:500 11px/1 'Geist Mono',monospace;letter-spacing:.08em;color:var(--acT)">{{ ev.eyebrow }}</div><div style="font:800 30px/1.05 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em;margin-top:6px">{{ ev.n }}</div></div>
 <button onClick="{{ ev.ask }}" style="flex:none;display:flex;align-items:center;gap:7px;height:34px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:13px;font-weight:600;transition:border-color .15s" style-hover="border-color:var(--ac)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 5v16M8 7h7"></path></svg>{{ ev.askLabel }}</button>
@@ -407,6 +675,15 @@
 </div>
 </sc-if>
 </section>
+</sc-if>
+<sc-if value="{{ calendarShowAgenda }}" hint-placeholder-val="{{ true }}">
+<section class="relay-day-agenda">
+<h3>{{ calendarDayLabel }}</h3>
+<sc-if value="{{ calendarDayEmpty }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;color:var(--event-muted);line-height:1.6;margin-bottom:16px">No events on this day.</div><button class="relay-cal-action" onClick="{{ calendarOpenForm }}">+ Add Event</button></sc-if>
+<sc-for list="{{ calendarAgenda }}" as="entry" hint-placeholder-count="0"><div class="relay-agenda-item"><div><strong>{{ entry.title }}</strong><small>{{ entry.timeLabel }}{{ entry.locationLabel }}</small></div><sc-if value="{{ entry.hasPlan }}" hint-placeholder-val="{{ false }}"><button class="relay-cal-action" onClick="{{ entry.open }}">Open plan</button></sc-if><sc-if value="{{ entry.custom }}" hint-placeholder-val="{{ false }}"><button class="relay-cal-action" onClick="{{ entry.remove }}" title="Remove this event">Remove</button></sc-if></div></sc-for>
+</section>
+</sc-if>
+</div>
 </div>
 </sc-if>
 
@@ -643,7 +920,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Vermilion&quot;,&quot;Cobalt&quot;,&quot;Maroon&quot;],&quot;default&quot;:&quot;Vermilion&quot;,&quot;tsType&quot;:&quot;'Vermilion'|'Cobalt'|'Maroon'&quot;,&quot;section&quot;:&quot;Brand&quot;},&quot;sidebar&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Ink&quot;,&quot;Paper&quot;],&quot;default&quot;:&quot;Ink&quot;,&quot;tsType&quot;:&quot;'Ink'|'Paper'&quot;,&quot;section&quot;:&quot;Brand&quot;},&quot;startTab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;evt&quot;,&quot;fin&quot;,&quot;mem&quot;,&quot;mkt&quot;,&quot;hand&quot;,&quot;arc&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Prototype&quot;}}">
 class Component extends DCLogic {
-  state = { drive:{folder:'',name:'',email:'',at:0,n:0,skipped:0}, driveOpen:false, driveInput:'', driveBusy:false, driveMsg:'', cfg:{googleClientId:'',driveFolderId:'',allowedDomain:''}, useArt:true, photo:null, flags:[], pv:null, docs:[], impOpen:false, impT:'', impC:'lessons', impE:'', impY:'2026', impX:'', fu:[], tab:null, dark:false, side:true, ai:false, draft:'', typing:false, toast:null, evt:0, est:false, memF:'all', step:2, q:'', role:'Treasurer', reminded:false, nudged:false, writing:false, tone:'Hype',
+  state = { calendarMonth:null,calendarDay:null,calendarUserEvents:[],calendarShowPlan:false,calendarFormOpen:false,calendarDraftTitle:'',calendarDraftDate:'',calendarDraftTime:'',calendarDraftLocation:'',calendarError:'',drive:{folder:'',name:'',email:'',at:0,n:0,skipped:0}, driveOpen:false, driveInput:'', driveBusy:false, driveMsg:'', cfg:{googleClientId:'',driveFolderId:'',allowedDomain:''}, useArt:true, photo:null, flags:[], pv:null, docs:[], impOpen:false, impT:'', impC:'lessons', impE:'', impY:'2026', impX:'', fu:[], tab:null, dark:false, side:true, ai:false, draft:'', typing:false, toast:null, evt:0, est:false, memF:'all', step:2, q:'', role:'Treasurer', reminded:false, nudged:false, writing:false, tone:'Hype',
     check:{room:false,cater:false,judges:true,brackets:true,budget:true}, tasks:{},
     mkt:'Robo-Rumble scrimmage, Sat Nov 15, 6pm at the Rec Center. Free pizza. Bring your bot.',
     msgs:[{r:'a',text:'Ask how something was done before. Every answer links to the doc it came from.',src:[]}],
@@ -663,6 +940,7 @@ class Component extends DCLogic {
     fb:["Nothing in the club's docs covers that yet. Try a past event, a vendor, a budget, or a process.",[]]
   };
   componentDidMount(){
+    this.loadCalendarEvents();
     try{ const raw=localStorage.getItem('relay.drive'); const d=raw&&JSON.parse(raw); if(d&&d.folder) this.setState({drive:d,driveInput:d.folder}); }catch(e){}
     fetch('/api/config').then(r=>r.ok?r.json():null).then(c=>{ if(c) this.setState(x=>({cfg:c,driveInput:x.driveInput||c.driveFolderId||''})); }).catch(()=>{});
     try{ const raw=localStorage.getItem('relay.importedDocs'); const d=raw&&JSON.parse(raw); if(Array.isArray(d)) this.setState({docs:d}); }catch(e){}
@@ -770,6 +1048,46 @@ class Component extends DCLogic {
     });
     this.toast('Disconnected from Google Drive');
   }
+  calendarStorageKey='relay-calendar-events-v1';
+  loadCalendarEvents(){
+    try {
+      const stored=JSON.parse(localStorage.getItem(this.calendarStorageKey)||'[]');
+      if(!Array.isArray(stored))return;
+      const ids=new Set();
+      const events=stored.slice(0,500).flatMap(item=>{
+        const checked=RelayCalendar.validateEvent(item);
+        if(!checked.valid||typeof item.id!=='string'||!/^custom-[a-zA-Z0-9-]{1,80}$/.test(item.id)||ids.has(item.id))return [];
+        ids.add(item.id);return [{...checked.event,id:item.id,custom:true}];
+      });
+      this.setState({calendarUserEvents:events});
+    } catch { /* A missing or unavailable browser store keeps the calendar usable. */ }
+  }
+  saveCalendarEvents(events){
+    let saved=true;
+    try {localStorage.setItem(this.calendarStorageKey,JSON.stringify(events));} catch {saved=false;}
+    this.setState({calendarUserEvents:events});return saved;
+  }
+  openCalendarForm(){
+    this.setState({calendarFormOpen:true,calendarError:'',calendarDraftDate:this.state.calendarDay||RelayCalendar.today()});
+  }
+  createCalendarEvent(event){
+    event.preventDefault();
+    const s=this.state;
+    const checked=RelayCalendar.validateEvent({title:s.calendarDraftTitle,date:s.calendarDraftDate,time:s.calendarDraftTime,location:s.calendarDraftLocation});
+    if(!checked.valid){this.setState({calendarError:checked.error});return;}
+    if(s.calendarUserEvents.length>=500){this.setState({calendarError:'This calendar can hold up to 500 saved events.'});return;}
+    const id='custom-'+(globalThis.crypto?.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
+    const item={...checked.event,id,custom:true};
+    const saved=this.saveCalendarEvents([...s.calendarUserEvents,item]);
+    this.setState({calendarFormOpen:false,calendarError:'',calendarMonth:item.date.slice(0,7),calendarDay:item.date,calendarShowPlan:false,calendarDraftTitle:'',calendarDraftTime:'',calendarDraftLocation:''});
+    this.toast(saved?'Event added to your calendar':'Event added for this session; browser storage is unavailable');
+  }
+  removeCalendarEvent(id){
+    if(!this.state.calendarUserEvents.some(event=>event.id===id))return;
+    const saved=this.saveCalendarEvents(this.state.calendarUserEvents.filter(event=>event.id!==id));
+    this.toast(saved?'Event removed':'Event removed for this session; browser storage is unavailable');
+  }
+
   classify(l){ const m=[[/rumble|scrim|last year/,'rumble'],[/kickoff/,'kick'],[/workshop|solder/,'work'],[/gala|fund|sponsor/,'gala'],[/cater|food|vendor|pizza/,'cater'],[/room|book/,'room'],[/spend|expens|cost|budget/,'spend'],[/elig|run for|officer/,'elig'],[/post|instagram|caption/,'posts'],[/treasurer|undone|loose/,'treas']]; const h=m.find(([r])=>r.test(l)); return h?h[1]:'fb'; }
   renderVals(){
     const s=this.state, d=s.dark, o=s.side, t=s.tab||this.props.startTab||'home';
@@ -845,12 +1163,33 @@ class Component extends DCLogic {
       {n:'Fall Kickoff',mo:'SEP',yr:'25',eyebrow:'SEP 2025 · ZACH ATRIUM',where:'ZACH atrium',status:'Done',tone:'mu',k:'kick',b:'$1,000',a:'$980',bp:100,apc:98,stats:[['BUDGET','$1,000'],['ACTUAL','$980'],['TURNOUT','74']],good:'Tacos were a hit. Best sign-up rate in years.',bad:'Ran out of name tags and drinks.'},
       {n:'Spring Gala',mo:'APR',yr:'25',eyebrow:'APR 2025 · HILTON BALLROOM',where:'Hilton ballroom',status:'Done',tone:'mu',k:'gala',b:'$4,800',a:'$4,520',bp:100,apc:94,stats:[['BUDGET','$4,800'],['ACTUAL','$4,520'],['TURNOUT','92']],good:'Sponsor landed, strong turnout, food on time.',bad:'Decor ran $300 over. Sponsor outreach started late.'},
       {n:'Robo-Rumble 2025',mo:'FEB',yr:'25',eyebrow:'FEB 2025 · REC CENTER',where:'Rec Center',status:'Done',tone:'mu',k:'rumble',b:'$2,500',a:'$2,310',bp:100,apc:92,stats:[['BUDGET','$2,500'],['ACTUAL','$2,310'],['TURNOUT','60']],good:'Brackets ran smoothly. Alumni judges were the highlight.',bad:'Room request filed 9 days out and denied once.'}];
-    const events=evData.map((e,j)=>({...e,pill:pill(e.tone),pick:()=>this.setState({evt:j}),
+    const events=evData.map((e,j)=>({...e,pill:pill(e.tone),pick:()=>this.setState({evt:j,calendarShowPlan:true,calendarMonth:j===0?'2026-11':({OCT:'2025-10',SEP:'2025-09',APR:'2025-04',FEB:'2025-02'}[e.mo]||this.state.calendarMonth),...(j===0?{calendarDay:'2026-11-15'}:{})}),
       row:rowA(j,'display:flex;align-items:center;gap:12px;width:100%;border:0;border-top:'+(j?'1px solid var(--line)':'0')+';cursor:pointer;padding:10px 16px;color:var(--tx);transition:background .15s;box-shadow:inset 3px 0 0 '+(s.evt===j?'var(--ac)':'transparent')+';background:'+(s.evt===j?'var(--sub)':'transparent'))}));
     const e0=evData[s.evt];
     const ev={...e0,upcoming:!!e0.up,past:!e0.up,stats:e0.stats.map(([l,x])=>({l,v:x})),askLabel:e0.up?'What went wrong last year?':'Ask about this event',
       ask:()=>this.ask(e0.up?'What went wrong at Robo-Rumble last year?':'What should we know about '+e0.n+'?',e0.k),
       bBar:bar(e0.bp||0,'var(--line)'),aBar:bar(e0.apc||0,'var(--ac)',150)};
+    const calendarTodayDate=RelayCalendar.today();
+    const calendarMonth=s.calendarMonth||calendarTodayDate.slice(0,7);
+    const calendarSelectedDay=s.calendarDay||calendarTodayDate;
+    const calendarEntries=[
+      {id:'plan-0',title:'Robo-Rumble 2026',date:'2026-11-15',time:'18:00',location:'Rec Center',planIndex:0},
+      {id:'club-meeting-7',title:'General meeting #7',date:'2026-11-12',time:'19:00',location:'ZACH 350'},
+      {id:'club-eligibility',title:'Officer eligibility review',date:'2026-11-20',time:'',timeUnknown:true,location:'Online'},
+      {id:'club-president-interview',title:'President exit interview',date:'2026-12-01',time:'',timeUnknown:true,location:'With incoming officers'},
+      ...s.calendarUserEvents
+    ];
+    const selectCalendarDay=date=>this.setState({calendarDay:date,calendarMonth:date.slice(0,7),calendarShowPlan:false});
+    const openCalendarEntry=item=>this.setState({calendarDay:item.date,calendarMonth:item.date.slice(0,7),calendarShowPlan:typeof item.planIndex==='number',...(typeof item.planIndex==='number'?{evt:item.planIndex}:{})});
+    const formatCalendarDay=date=>new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric',timeZone:'UTC'}).format(new Date(date+'T12:00:00Z'));
+    const calendarItem=item=>({...item,timeLabel:item.timeUnknown?'Time not set':RelayCalendar.formatTime(item.time),locationLabel:item.location?' · '+item.location:'',label:item.title+' · '+formatCalendarDay(item.date),open:()=>openCalendarEntry(item),hasPlan:typeof item.planIndex==='number',custom:!!item.custom,remove:()=>this.removeCalendarEvent(item.id)});
+    const calendarDays=RelayCalendar.monthGrid(calendarMonth,calendarEntries,calendarTodayDate).map(day=>({...day,
+      className:'relay-calendar-day'+(day.inMonth?'':' is-outside')+(day.isToday?' is-today':'')+(day.date===calendarSelectedDay?' is-selected':''),
+      label:'Select '+formatCalendarDay(day.date),select:()=>selectCalendarDay(day.date),items:day.events.map(calendarItem)
+    }));
+    const calendarAgenda=calendarEntries.filter(item=>item.date===calendarSelectedDay).sort((a,b)=>(a.time||'').localeCompare(b.time||'')||a.title.localeCompare(b.title)).map(calendarItem);
+    const calendarMonthCount=calendarEntries.filter(item=>item.date.startsWith(calendarMonth+'-')).length;
+
     // money
     const rev=[['Sponsorships',7500],['Dues · 43 × $120',5160],['Fundraisers',2100]].map(([l,x],i)=>({l,v:'$'+x.toLocaleString(),bar:bar(x/7500*100,'var(--ok)',i*80)}));
     const sp=[['Spring Gala',4520],['Robo-Rumble 2025',2310],['Fall Kickoff',980],['Workshops',950]].map(([l,x],i)=>({l,v:'$'+x.toLocaleString(),bar:bar(x/4520*100,'var(--ac)',i*80)}));
@@ -917,8 +1256,14 @@ class Component extends DCLogic {
       themeIcon:d?'M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4':'M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z',
       toggleTheme:()=>this.setState({dark:!d}),
       drawerStyle:'position:absolute;top:10px;right:10px;bottom:10px;width:min(392px,calc(100% - 20px));z-index:10;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--drawerSh);transition:transform .42s '+E+',opacity .3s,visibility 0s linear '+(s.ai?'0s':'.42s')+';transform:translateX('+(s.ai?'0':'calc(100% + 24px)')+');opacity:'+(s.ai?1:0)+';visibility:'+(s.ai?'visible':'hidden')+';pointer-events:'+(s.ai?'auto':'none'),
+      calendarDays,calendarMonthLabel:RelayCalendar.monthLabel(calendarMonth),calendarCountLabel:calendarMonthCount+' event'+(calendarMonthCount===1?'':'s')+' this month',calendarDayLabel:formatCalendarDay(calendarSelectedDay),calendarAgenda,calendarDayEmpty:calendarAgenda.length===0,
+      calendarShowPlan:!!s.calendarShowPlan,calendarShowAgenda:!s.calendarShowPlan,
+      calendarPrev:()=>this.setState({calendarMonth:RelayCalendar.moveMonth(calendarMonth,-1)}),calendarNext:()=>this.setState({calendarMonth:RelayCalendar.moveMonth(calendarMonth,1)}),calendarToday:()=>selectCalendarDay(RelayCalendar.today()),
+      calendarFormOpen:s.calendarFormOpen,calendarOpenForm:()=>this.openCalendarForm(),calendarCloseForm:()=>this.setState({calendarFormOpen:false,calendarError:''}),calendarSave:event=>this.createCalendarEvent(event),
+      calendarDraftTitle:s.calendarDraftTitle,calendarSetTitle:event=>this.setState({calendarDraftTitle:event.target.value}),calendarDraftDate:s.calendarDraftDate,calendarSetDate:event=>this.setState({calendarDraftDate:event.target.value}),
+      calendarDraftTime:s.calendarDraftTime,calendarSetTime:event=>this.setState({calendarDraftTime:event.target.value}),calendarDraftLocation:s.calendarDraftLocation,calendarSetLocation:event=>this.setState({calendarDraftLocation:event.target.value}),calendarError:s.calendarError,calendarHasError:!!s.calendarError,
       isHome:t==='home',isEvt:t==='evt',isFin:t==='fin',isMem:t==='mem',isMkt:t==='mkt',isHand:t==='hand',isArc:t==='arc',
-      goEvents:go('evt',{evt:0}),goHand:go('hand'),askRumble:()=>this.ask('What went wrong at Robo-Rumble last year?','rumble'),
+      goEvents:go('evt',{evt:0,calendarShowPlan:true,calendarMonth:'2026-11',calendarDay:'2026-11-15'}),goHand:go('hand'),askRumble:()=>this.ask('What went wrong at Robo-Rumble last year?','rumble'),
       readySegs,readyLabel:nReady+' OF 6 READY',readyBar:bar(nReady/6*100,'var(--ok)'),missing,checklist,
       kpis:[{l:'BALANCE',v:'$6,000',d:'+$360',ds:"font:500 11.5px/1 'Geist Mono',monospace;color:var(--ok)",s:'$14,760 in · $8,760 out',go:go('fin')},{l:'DUES',v:unpaid?'43/45':'45/45',d:unpaid?'2 owed':'all paid',ds:"font:500 11.5px/1 'Geist Mono',monospace;color:var(--"+(unpaid?'acT':'ok')+")",s:unpaid?'$240 outstanding':'Reminders sent',go:go('mem')},{l:'AVG ATTENDANCE',v:'76%',d:'−3%',ds:"font:500 11.5px/1 'Geist Mono',monospace;color:var(--mu)",s:'Last 6 meetings',go:go('mem')},{l:'HANDOFF',v:handAvg+'%',d:'24 wks',ds:"font:500 11.5px/1 'Geist Mono',monospace;color:var(--mu)",s:'4 officers',go:go('hand')}],
       tasks,taskLabel:nDone+' OF 5 DONE',taskBar:bar(nDone/5*100,'var(--ok)'),

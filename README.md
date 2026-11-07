@@ -188,3 +188,8 @@ No raster images. Icons are inline 24×24 stroke SVG paths (stroke-width 1.8, ro
 
 ## Suggested prompt for Codex
 > Recreate `Relay-standalone.html` as a React + TypeScript app. Treat `Relay.dc.html` as the source of truth for markup, inline styles, copy, data, and behavior, and `README.md` for tokens and motion. Match it pixel-for-pixel, including all animations (easing cubic-bezier(.2,.8,.2,1)), light/dark themes, accent variants, collapsible sidebar, Playbook drawer, and every interaction listed. Put tokens in CSS variables with the exact names in the README.
+
+
+## Events calendar
+
+Events now includes a Monday-first month calendar with previous/next navigation, a Today shortcut, date selection, and links to existing event plans. Add Event saves a title, date, optional time, and location in this browser; saved events survive reloads and can be removed from the selected day’s agenda. This calendar does not sync with Google Calendar. Historical plans without exact dates remain in the list below the calendar. Date logic in `calendar-model.js` is tested for leap years, year boundaries, Chicago time, and daylight-saving changes.
