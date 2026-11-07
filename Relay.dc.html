@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
 <script src="./poster.js"></script>
+<script src="./drive.js"></script>
 </head>
 <body>
 <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#16161D"/><rect x="30" y="30" width="40" height="40" rx="10" fill="#FF5A1F"/><rect x="41" y="38" width="6" height="22" rx="2" fill="#17130F" transform="skewX(-18) translate(14 0)"/><rect x="51" y="42" width="6" height="22" rx="2" fill="#17130F" opacity=".5" transform="skewX(-18) translate(14 0)"/></svg></template>
@@ -560,8 +561,23 @@
 <div style="flex:0 1 340px;display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--card)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--mu);flex:none"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg><input value="{{ q }}" onChange="{{ setQ }}" placeholder="Filter documents" style="flex:1;min-width:0;border:0;outline:0;background:transparent;font-size:14px"></div>
 <span style="flex:1"></span>
 <button onClick="{{ toggleImp }}" style="flex:none;height:38px;padding:0 16px;border-radius:12px;border:0;cursor:pointer;font-weight:600;font-size:13.5px;background:var(--ac);color:var(--onAc);transition:transform .15s" style-active="transform:scale(.97)">Import for handoff</button>
-<span style="font-size:12.5px;color:var(--mu)">Synced from the officers' Drive · 2 hours ago</span>
+<button onClick="{{ toggleDrive }}" style="{{ driveChip }}">Google Drive</button>
+<span style="font-size:12.5px;color:var(--mu)">{{ driveLine }}</span>
 </div>
+<sc-if value="{{ driveOpen }}" hint-placeholder-val="{{ false }}">
+<section style="padding:16px 18px 18px;animation:rise .4s cubic-bezier(.2,.8,.2,1) both">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap"><span style="font:700 15px/1 'Bricolage Grotesque',sans-serif">Google Drive</span><span style="font-size:12.5px;color:var(--mu)">Relay reads the one folder you choose, as you. It never edits or deletes anything.</span></div>
+<sc-if value="{{ driveNoCfg }}" hint-placeholder-val="{{ false }}"><div style="margin-top:12px;font-size:12.5px;line-height:1.45;padding:9px 11px;border-radius:9px;background:var(--warnS);color:var(--warn)">Drive is not set up on this deployment yet. An admin needs to add GOOGLE_CLIENT_ID in Vercel (README, Google Drive section).</div></sc-if>
+<sc-if value="{{ driveHasDomain }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;font:500 10.5px/1.5 'Geist Mono',monospace;letter-spacing:.04em;color:var(--mu)">ORGANIZATION ACCOUNTS ONLY: {{ driveDomain }}</div></sc-if>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+<input value="{{ driveInput }}" onChange="{{ setDriveInput }}" placeholder="Paste the Drive folder link" style="flex:1 1 280px;min-width:0;height:38px;padding:0 12px;border:1px solid var(--line);outline:0;border-radius:10px;background:var(--sub);color:var(--tx);font-size:14px">
+<button onClick="{{ driveSync }}" style="{{ driveBtnStyle }}">{{ driveBtn }}</button>
+<sc-if value="{{ driveConnected }}" hint-placeholder-val="{{ false }}"><button onClick="{{ driveDisconnect }}" style="flex:none;height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-weight:600;font-size:13.5px">Disconnect</button></sc-if>
+</div>
+<sc-if value="{{ driveConnected }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;font-size:12.5px;color:var(--ok)">{{ driveStatus }}</div></sc-if>
+<sc-if value="{{ driveHasMsg }}" hint-placeholder-val="{{ false }}"><div style="margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--mu)">{{ driveMsg }}</div></sc-if>
+</section>
+</sc-if>
 <sc-if value="{{ impOpen }}" hint-placeholder-val="{{ false }}">
 <section style="padding:16px 18px 18px;animation:rise .4s cubic-bezier(.2,.8,.2,1) both">
 <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap"><span style="font:700 15px/1 'Bricolage Grotesque',sans-serif">Import for handoff</span><span style="font-size:12.5px;color:var(--mu)">Everything saved here becomes part of what the Playbook knows and can cite.</span></div>
@@ -627,7 +643,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Vermilion&quot;,&quot;Cobalt&quot;,&quot;Maroon&quot;],&quot;default&quot;:&quot;Vermilion&quot;,&quot;tsType&quot;:&quot;'Vermilion'|'Cobalt'|'Maroon'&quot;,&quot;section&quot;:&quot;Brand&quot;},&quot;sidebar&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Ink&quot;,&quot;Paper&quot;],&quot;default&quot;:&quot;Ink&quot;,&quot;tsType&quot;:&quot;'Ink'|'Paper'&quot;,&quot;section&quot;:&quot;Brand&quot;},&quot;startTab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;evt&quot;,&quot;fin&quot;,&quot;mem&quot;,&quot;mkt&quot;,&quot;hand&quot;,&quot;arc&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Prototype&quot;}}">
 class Component extends DCLogic {
-  state = { useArt:true, photo:null, flags:[], pv:null, docs:[], impOpen:false, impT:'', impC:'lessons', impE:'', impY:'2026', impX:'', fu:[], tab:null, dark:false, side:true, ai:false, draft:'', typing:false, toast:null, evt:0, est:false, memF:'all', step:2, q:'', role:'Treasurer', reminded:false, nudged:false, writing:false, tone:'Hype',
+  state = { drive:{folder:'',name:'',email:'',at:0,n:0,skipped:0}, driveOpen:false, driveInput:'', driveBusy:false, driveMsg:'', cfg:{googleClientId:'',driveFolderId:'',allowedDomain:''}, useArt:true, photo:null, flags:[], pv:null, docs:[], impOpen:false, impT:'', impC:'lessons', impE:'', impY:'2026', impX:'', fu:[], tab:null, dark:false, side:true, ai:false, draft:'', typing:false, toast:null, evt:0, est:false, memF:'all', step:2, q:'', role:'Treasurer', reminded:false, nudged:false, writing:false, tone:'Hype',
     check:{room:false,cater:false,judges:true,brackets:true,budget:true}, tasks:{},
     mkt:'Robo-Rumble scrimmage, Sat Nov 15, 6pm at the Rec Center. Free pizza. Bring your bot.',
     msgs:[{r:'a',text:'Ask how something was done before. Every answer links to the doc it came from.',src:[]}],
@@ -647,6 +663,8 @@ class Component extends DCLogic {
     fb:["Nothing in the club's docs covers that yet. Try a past event, a vendor, a budget, or a process.",[]]
   };
   componentDidMount(){
+    try{ const raw=localStorage.getItem('relay.drive'); const d=raw&&JSON.parse(raw); if(d&&d.folder) this.setState({drive:d,driveInput:d.folder}); }catch(e){}
+    fetch('/api/config').then(r=>r.ok?r.json():null).then(c=>{ if(c) this.setState(x=>({cfg:c,driveInput:x.driveInput||c.driveFolderId||''})); }).catch(()=>{});
     try{ const raw=localStorage.getItem('relay.importedDocs'); const d=raw&&JSON.parse(raw); if(Array.isArray(d)) this.setState({docs:d}); }catch(e){}
     this.rs=()=>{const sh=window.innerHeight<640; if(sh!==this.short){this.short=sh;this.forceUpdate();}}; this.rs(); window.addEventListener('resize',this.rs);
     this.kd=e=>{ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();this.setAi(!this.state.ai);} if(e.key==='Escape'&&this.state.ai)this.setAi(false); };
@@ -678,7 +696,7 @@ class Component extends DCLogic {
   }
   addDoc(d){
     this.setState(s=>{
-      const docs=[...s.docs.filter(x=>x.title.toLowerCase()!==d.title.toLowerCase()),d].slice(-30);
+      const docs=[...s.docs.filter(x=>x.title.toLowerCase()!==d.title.toLowerCase()),d].slice(-60);
       try{ localStorage.setItem('relay.importedDocs',JSON.stringify(docs)); }catch(e){}
       return {docs};
     });
@@ -710,6 +728,47 @@ class Component extends DCLogic {
   downloadPost(){
     const p=this.state.pv; if(!p) return;
     const a=document.createElement('a'); a.href=p.full; a.download='relay-post-'+p.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'.png'; a.click();
+  }
+  persistDocs(docs){ try{ localStorage.setItem('relay.importedDocs',JSON.stringify(docs)); }catch(e){} }
+  async driveSync(){
+    const s=this.state, cfg=s.cfg, D=window.RelayDrive;
+    if(s.driveBusy) return;
+    if(!cfg.googleClientId){ this.setState({driveMsg:'Google Drive is not set up on this deployment yet. An admin needs to add GOOGLE_CLIENT_ID (see the README).'}); return; }
+    const folder=D.parseFolderId(s.driveInput||s.drive.folder||cfg.driveFolderId);
+    if(!folder){ this.setState({driveMsg:'Paste the link to your Drive folder first.'}); return; }
+    this.setState({driveBusy:true,driveMsg:'Connecting to Google…'});
+    try{
+      if(!this.driveTok||this.driveTok.expiresAt<Date.now()) this.driveTok=await D.connect(cfg.googleClientId,cfg.allowedDomain);
+      const tok=this.driveTok.token;
+      const me=await D.whoami(tok);
+      if(cfg.allowedDomain&&me.domain!==cfg.allowedDomain){ this.driveTok=null; throw new Error('Sign in with your '+cfg.allowedDomain+' account (you used '+me.email+').'); }
+      this.setState({driveMsg:'Opening the folder…'});
+      const name=await D.folderName(tok,folder);
+      const out=await D.sync(tok,folder,{onProgress:(i,n,f)=>this.setState({driveMsg:'Reading '+i+' of '+n+': '+f})});
+      // Mirror the folder: replace earlier Drive docs (so deletions disappear), keep anything imported by hand.
+      this.setState(x=>{
+        const docs=[...x.docs.filter(d=>d.source!=='drive'),...out.docs].slice(-60);
+        this.persistDocs(docs);
+        const drive={folder,name,email:me.email,at:Date.now(),n:out.docs.length,skipped:out.skipped.length};
+        try{ localStorage.setItem('relay.drive',JSON.stringify(drive)); }catch(e){}
+        return {docs,drive,driveInput:folder,driveBusy:false,driveMsg:out.skipped.length?out.skipped.length+' file'+(out.skipped.length>1?'s':'')+' skipped (PDFs, images and other types Relay cannot read yet).':'',q:''};
+      });
+      this.toast('Synced '+out.docs.length+' doc'+(out.docs.length===1?'':'s')+' from '+name);
+    }catch(e){
+      if(e&&e.status===401) this.driveTok=null;
+      this.setState({driveBusy:false,driveMsg:D.explain(e)});
+    }
+  }
+  driveDisconnect(){
+    try{ if(this.driveTok&&window.google&&window.google.accounts) window.google.accounts.oauth2.revoke(this.driveTok.token,()=>{}); }catch(e){}
+    this.driveTok=null;
+    this.setState(x=>{
+      const docs=x.docs.filter(d=>d.source!=='drive');
+      this.persistDocs(docs);
+      try{ localStorage.removeItem('relay.drive'); }catch(e){}
+      return {docs,drive:{folder:'',name:'',email:'',at:0,n:0,skipped:0},driveMsg:''};
+    });
+    this.toast('Disconnected from Google Drive');
   }
   classify(l){ const m=[[/rumble|scrim|last year/,'rumble'],[/kickoff/,'kick'],[/workshop|solder/,'work'],[/gala|fund|sponsor/,'gala'],[/cater|food|vendor|pizza/,'cater'],[/room|book/,'room'],[/spend|expens|cost|budget/,'spend'],[/elig|run for|officer/,'elig'],[/post|instagram|caption/,'posts'],[/treasurer|undone|loose/,'treas']]; const h=m.find(([r])=>r.test(l)); return h?h[1]:'fb'; }
   renderVals(){
@@ -822,6 +881,12 @@ class Component extends DCLogic {
     const docAll=[['Spring Gala Recap','Recap','Priya Nair','2025',14],['Vendor Contacts','Contacts','Maya Chen','2026',12],['Budget FY25','Sheet','Maya Chen','2025',11],['Treasurer Reflection','Handoff','Ravi Shah','2025',9],['Officer Playbook','Guide','Jordan Ellis','2024',8],['Robo-Rumble Recap','Recap','Priya Nair','2025',7],['Secretary Handoff','Handoff','Luis Ortega','2026',6],['Fall Kickoff Minutes','Minutes','Luis Ortega','2025',5],['Constitution','Policy','Exec board','2023',4],['Membership Sheet','Sheet','Luis Ortega','2026',3],['Marketing Notes','Guide','Tara Brooks','2025',2],['Workshop Series Notes','Recap','Priya Nair','2025',2],['Student Activities Room Rules (SAMPLE)','Policy','Exec board','2026',0],['Funds and Signature Rules (SAMPLE)','Policy','Exec board','2026',0],...s.docs.map(d=>[d.title,({rules:'Policy',event:'Recap',lessons:'Lessons',contacts:'Contacts',finance:'Sheet',handoff:'Handoff',guide:'Guide'})[d.category]||'Guide',d.author||'Imported',d.year||'',0])];
     const ql=s.q.toLowerCase();
     const docs=docAll.filter(x=>!ql||x.join(' ').toLowerCase().includes(ql)).map(([n,tt,ow,y,c],j)=>({n,t:tt,o:ow,y,c:c+'×',tag:pill(tt==='Handoff'?'ac':'mu'),row:rowA(j,'display:grid;grid-template-columns:minmax(200px,1.6fr) 110px 120px 70px 90px;gap:12px;align-items:center;padding:10px 16px;border-top:'+(j?'1px solid var(--line)':'0')+';min-width:640px')}));
+    // google drive
+    const dr=s.drive, connected=!!dr.folder&&dr.at>0;
+    const mins=Math.max(0,Math.round((Date.now()-dr.at)/60000));
+    const ago=mins<1?'just now':mins<60?mins+' min ago':mins<1440?Math.round(mins/60)+' h ago':Math.round(mins/1440)+' d ago';
+    const driveLine=connected?'Synced from '+dr.name+' · '+ago:'Not connected to Google Drive';
+    const driveBtn=s.driveBusy?'Syncing…':connected?'Sync now':'Connect and sync';
     // import for handoff
     const impCats=[['rules','TAMU rules'],['lessons','What worked / didn’t'],['event','Event recap'],['contacts','Contacts'],['guide','General guide']].map(([id,l])=>({l,go:()=>this.setState({impC:id}),style:'height:30px;padding:0 11px;border-radius:10px;cursor:pointer;font-size:12.5px;font-weight:600;transition:all .15s;border:1px solid '+(s.impC===id?'var(--tx)':'var(--line)')+';background:'+(s.impC===id?'var(--tx)':'var(--card)')+';color:'+(s.impC===id?'var(--bg)':'var(--mu)')}));
     const impOk=!!(s.impT.trim()&&s.impX.trim());
@@ -876,6 +941,13 @@ class Component extends DCLogic {
       nudge:()=>{ if(s.nudged) return; this.setState({nudged:true}); this.toast('Interview invite sent to Priya'); },nudgeLabel:s.nudged?'Invite sent':'Send Priya an interview invite',
       exitStepLabel:done?'COMPLETE':'QUESTION '+(i+1)+' OF 4',exitSegs,exitQ:done?'Handoff filed.':qs[i][0],exitA:done?"It's in Docs now, and the incoming treasurer can read it or ask the Playbook about it.":qs[i][1],
       exitPrev:()=>this.setState({step:Math.max(0,i-1)}),exitNext:()=>{ if(i===3){ this.toast('Treasurer handoff filed to Docs'); this.addDoc({title:'Treasurer Handoff Interview (Maya Chen)',category:'handoff',event:'',year:'2026',author:'Maya Chen',text:qs.map(([qq,aa])=>'Q: '+qq+' A: '+aa).join(' ')}); } this.setState({step:done?0:i+1}); },exitNextLabel:done?'Start over':i===3?'Finish and file':'Next question',handoff,
+      driveLine,driveOpen:s.driveOpen,toggleDrive:()=>this.setState({driveOpen:!s.driveOpen}),driveInput:s.driveInput,setDriveInput:e=>this.setState({driveInput:e.target.value}),
+      driveBtn,driveSync:()=>this.driveSync(),driveDisconnect:()=>this.driveDisconnect(),driveConnected:connected,
+      driveNoCfg:!s.cfg.googleClientId,driveDomain:s.cfg.allowedDomain,driveHasDomain:!!s.cfg.allowedDomain,
+      driveStatus:connected?'Connected as '+dr.email+' · '+dr.n+' doc'+(dr.n===1?'':'s')+' synced':'',
+      driveHasMsg:!!s.driveMsg,driveMsg:s.driveMsg,
+      driveBtnStyle:'flex:none;border:0;height:38px;padding:0 16px;border-radius:10px;font-weight:600;font-size:13.5px;background:var(--ac);color:var(--onAc);transition:opacity .2s,transform .15s;cursor:'+(s.driveBusy?'progress':'pointer')+';opacity:'+(s.driveBusy?.6:1),
+      driveChip:'flex:none;height:38px;padding:0 14px;border-radius:12px;cursor:pointer;font-weight:600;font-size:13.5px;transition:all .15s;border:1px solid '+(s.driveOpen||connected?'var(--ac)':'var(--line)')+';background:'+(s.driveOpen||connected?'var(--acS)':'var(--card)')+';color:'+(s.driveOpen||connected?'var(--acT)':'var(--tx)'),
       q:s.q,setQ:e=>this.setState({q:e.target.value}),docs,noDocs:docs.length===0,
       impOpen:s.impOpen,toggleImp:()=>this.setState({impOpen:!s.impOpen}),impCats,impT:s.impT,setImpT:e=>this.setState({impT:e.target.value}),impE:s.impE,setImpE:e=>this.setState({impE:e.target.value}),impY:s.impY,setImpY:e=>this.setState({impY:e.target.value}),impX:s.impX,setImpX:e=>this.setState({impX:e.target.value}),impFile,saveImp,impField,
       impSaveStyle:'border:0;height:36px;padding:0 16px;border-radius:9px;font-weight:600;font-size:13.5px;transition:opacity .2s,transform .15s;cursor:'+(impOk?'pointer':'not-allowed')+';opacity:'+(impOk?1:.45)+';background:var(--ac);color:var(--onAc)',

@@ -28,5 +28,6 @@ if (import.meta.url === new URL(process.argv[1], 'file://').href || process.argv
   writeFileSync(new URL('index.html', dist), renderIndex(readFileSync(new URL('Relay.dc.html', root), 'utf8')));
   copyFileSync(new URL('support.js', root), new URL('support.js', dist));
   copyFileSync(new URL('poster.js', root), new URL('poster.js', dist));
-  console.log('Built dist/index.html, support.js and poster.js');
+  copyFileSync(new URL('drive.js', root), new URL('drive.js', dist));
+  console.log('Built dist/index.html, support.js, poster.js and drive.js');
 }

@@ -6,6 +6,7 @@ import { readFile } from 'node:fs/promises';
 import { renderIndex } from './scripts/build-site.mjs';
 import { POST as chat } from './api/chat.mjs';
 import { POST as post } from './api/post.mjs';
+import { GET as config } from './api/config.mjs';
 
 // Tiny .env.local loader so local dev matches Vercel without a dependency.
 for (const name of ['.env.local', '.env']) {
@@ -41,13 +42,18 @@ const server = createServer(async (req, res) => {
       res.writeHead(response.status, { 'Content-Type': 'application/json', ...nostore });
       return void res.end(await response.text());
     }
+    if (pathname === '/api/config' && req.method === 'GET') {
+      const response = config();
+      res.writeHead(response.status, { 'Content-Type': 'application/json', ...nostore });
+      return void res.end(await response.text());
+    }
     if (req.method !== 'GET' && req.method !== 'HEAD') return void res.writeHead(405, { Allow: 'GET, HEAD' }).end();
     if (pathname === '/' || pathname === '/index.html') {
       const html = renderIndex(await readFile(new URL('Relay.dc.html', import.meta.url), 'utf8'));
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', ...nostore });
       return void res.end(req.method === 'HEAD' ? undefined : html);
     }
-    if (pathname === '/support.js' || pathname === '/poster.js') {
+    if (pathname === '/support.js' || pathname === '/poster.js' || pathname === '/drive.js') {
       res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8', ...nostore });
       return void res.end(await readFile(new URL(pathname.slice(1), import.meta.url)));
     }

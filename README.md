@@ -22,6 +22,24 @@ No key? The Playbook still works with its built-in sample answers, so demos neve
 
 Heads up: imported docs are saved in the browser for now (so they follow that officer's browser, not the whole club). Moving them to shared storage is the next step.
 
+### Google Drive sync (Docs tab)
+
+Docs → **Google Drive** → paste the folder link → **Connect and sync**. Relay reads that folder (and its subfolders) and turns the documents into Playbook memory. It mirrors the folder, so a doc deleted from Drive disappears on the next sync, and docs imported by hand are left alone. Google Docs and Slides are read as text, Sheets as CSV, and `.md`/`.txt` files as-is. PDFs and images are skipped (and counted).
+
+How it stays safe: each officer signs in with their own organization Google account (read-only access), and Relay reads Drive from their browser with that sign-in. There is no client secret and no server-side copy of anyone's token, so Relay can only see what that officer can see, and nobody who isn't signed in can read your Drive through the site.
+
+**One-time admin setup (about 10 minutes)**
+1. In [Google Cloud Console](https://console.cloud.google.com/), use the same project as the Gemini key and enable the **Google Drive API**.
+2. **OAuth consent screen**: choose **Internal** (this keeps it limited to your Workspace and avoids Google's app verification). Add the scope `.../auth/drive.readonly`.
+3. **Credentials → Create credentials → OAuth client ID → Web application.** Under *Authorized JavaScript origins* add your site (for example `https://relay-google-makeathon.vercel.app`) and `http://localhost:3000`. No redirect URI is needed.
+4. In Vercel (Project Settings → Environment Variables) add:
+   - `GOOGLE_CLIENT_ID`: the client ID from step 3. It is public by design.
+   - `GOOGLE_ALLOWED_DOMAIN`: your organization's domain, e.g. `tamu.edu`. Optional, but it rejects personal accounts.
+   - `GOOGLE_DRIVE_FOLDER_ID`: optional. Prefills the club's folder so officers just click connect.
+5. Redeploy. For local dev, put the same variables in `.env.local`.
+
+Heads up: synced docs are saved in each officer's browser (like imports), so every officer syncs once on their own machine. Shared storage is the next step.
+
 ### Marketing posts (Posts tab)
 
 Type what the post is about, hit **Create post**, get a finished 4:5 graphic plus caption. Posts look consistent because the AI never designs anything: it only proposes words. The layout, fonts, colors and motifs are fixed in `poster.js`, and every post is drawn by that one renderer.
