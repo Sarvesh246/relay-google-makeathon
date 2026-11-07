@@ -30,10 +30,10 @@ How it stays safe: each officer signs in with their own organization Google acco
 
 **One-time admin setup (about 10 minutes)**
 1. In [Google Cloud Console](https://console.cloud.google.com/), use the same project as the Gemini key and enable the **Google Drive API**.
-2. **OAuth consent screen**: choose **Internal** (this keeps it limited to your Workspace and avoids Google's app verification). Add the scope `.../auth/drive.readonly`.
+2. **OAuth consent screen**: choose **External** to allow organizations outside your Google Workspace. Add the scope `.../auth/drive.readonly`. While the app is in testing, add each connecting account as a test user. Google verification may be required for broader access.
 3. **Credentials → Create credentials → OAuth client ID → Web application.** Under *Authorized JavaScript origins* add your site (for example `https://relay-google-makeathon.vercel.app`) and `http://localhost:3000`. No redirect URI is needed.
 4. In Vercel (Project Settings → Environment Variables) add:
-   - `GOOGLE_CLIENT_ID`: the client ID from step 3. It is public by design.
+   - `GOOGLE_CLIENT_ID`: optional override for the public client ID configured in `api/config.mjs`.
    - `GOOGLE_ALLOWED_DOMAIN`: your organization's domain, e.g. `tamu.edu`. Optional, but it rejects personal accounts.
    - `GOOGLE_DRIVE_FOLDER_ID`: optional. Prefills the club's folder so officers just click connect.
 5. Redeploy. For local dev, put the same variables in `.env.local`.

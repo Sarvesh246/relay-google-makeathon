@@ -6,7 +6,7 @@
 export function GET() {
   return Response.json(
     {
-      googleClientId: process.env.GOOGLE_CLIENT_ID || '',
+      googleClientId: process.env.GOOGLE_CLIENT_ID || '388477342960-l3kgcuc2l6r6mb92pfo3mduv9k3hfcnm.apps.googleusercontent.com',
       driveFolderId: process.env.GOOGLE_DRIVE_FOLDER_ID || '',
       allowedDomain: (process.env.GOOGLE_ALLOWED_DOMAIN || '').toLowerCase(),
     },
