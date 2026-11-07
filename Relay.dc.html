@@ -218,6 +218,20 @@
 .relay-dashboard-shell[data-theme="dark"] .relay-screen,.relay-drawer[data-theme="dark"] {--bg:#151a28;--ink:#1b2234;--inkTx:#e1e5fa}
 .relay-dashboard-shell[data-theme="dark"] .relay-screen .relay-lanes {--laneLine:rgba(179,194,237,.12);--laneSel:rgba(138,124,224,.18)}
 .relay-dashboard-shell[data-theme="dark"] .relay-screen .relay-lanes button > span:nth-child(3) {background:rgba(0,0,0,.18) !important;border-color:rgba(179,194,237,.14) !important;box-shadow:none}
+/* Playbook input: Gemini-style orbiting glow. Idle = slow dim orbit, focus = brighter and faster. */
+@property --relay-ang {syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes relayOrbit {to {--relay-ang:360deg}}
+.relay-drawer form {position:relative;border-color:transparent !important;--relay-ring:conic-gradient(from var(--relay-ang),#4285f4,#9b72cb,#d96570,#f6b26b,#6fcf97,#4285f4)}
+.relay-drawer form::before,.relay-drawer form::after {content:"";position:absolute;border-radius:inherit;pointer-events:none;background:var(--relay-ring);animation:relayOrbit 7s linear infinite;transition:opacity .35s}
+.relay-drawer form::before {inset:-1px;padding:1.5px;opacity:.5;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.relay-drawer form::after {inset:-1px;z-index:-1;filter:blur(11px);opacity:.12}
+.relay-drawer form:focus-within::before {opacity:1;animation-duration:3.2s}
+.relay-drawer form:focus-within::after {opacity:.42;animation-duration:3.2s}
+.relay-drawer[data-theme="dark"] form::before {opacity:.65}
+.relay-drawer[data-theme="dark"] form::after {opacity:.2}
+.relay-drawer[data-theme="dark"] form:focus-within::before {opacity:1}
+.relay-drawer[data-theme="dark"] form:focus-within::after {opacity:.6}
+@media(prefers-reduced-motion:reduce) {.relay-drawer form::before,.relay-drawer form::after {animation:none}}
 @media(max-width:1150px) {.relay-screen .relay-stats {grid-template-columns:repeat(2,minmax(0,1fr)) !important}}
 @media(prefers-reduced-motion:reduce) {.relay-screen *,.relay-drawer * {transition:none !important;animation:none !important}}
 </style></helmet>
